@@ -18,7 +18,6 @@ characters ={
         1 : {"frame" : 8, "bottom" : 126, "width" : 42, "height" : 38},      #run
         2 : {"frame" : 2, "bottom" : 71, "width" : 40, "height" : 45},       #sturn
         3 : {"frame" : 5, "bottom" : 37, "width" : 34, "height" : 34},
-        4 : {"frame" : 6, "bottom" : 0, "width" : 31, "height" : 27},
         "speed" : 1,
         "cooldown_time" : 10,
         "hording_time" : 3,
@@ -88,25 +87,4 @@ class Character:
         self.speed = self.character['speed']
         self.dir += direction
         
-    def handle_events(self):
-        for event in get_events():
-            if event.type == SDL_QUIT:
-                pass
-            elif event.type == SDL_KEYDOWN:
-                if event.key == SDLK_ESCAPE:
-                    pass
-                elif event.key == SDLK_UP:
-                    self.move(1)
-                elif event.key == SDLK_DOWN:
-                    self.move(-1)
-                elif event.key == SDLK_r:
-                    if self.available_skill:
-                        self.available_skill = False
-                        self.active_skill_time = time.time()
-            elif event.type == SDL_KEYUP:
-                if event.key == SDLK_UP:
-                    self.dir -= 1
-                elif event.key == SDLK_DOWN:
-                    self.dir += 1
-                elif event.key == SDLK_r:
-                    pass
+    
