@@ -1,6 +1,7 @@
 import pico2d
 import game_framework
 import logo_state
+import play_state
 
 start_state = logo_state
 
