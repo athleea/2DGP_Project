@@ -1,5 +1,5 @@
 import game_framework
-import title_state
+import lobby_state
 from pico2d import *
 
 image= None
@@ -7,7 +7,7 @@ logo_time = 0.0
 
 def enter():
     global image
-    image = load_image('res/logo.jpg')
+    image = load_image('res/logo.png')
 
 def exit():
     global image
@@ -18,7 +18,7 @@ def update():
 
     if logo_time > 1.0:
         logo_time = 0
-        game_framework.change_state(title_state)
+        game_framework.change_state(lobby_state)
     delay(0.01)
     logo_time += 0.01
 

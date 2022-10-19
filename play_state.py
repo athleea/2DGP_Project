@@ -1,6 +1,6 @@
 import game_framework
 from map_object import Background
-import title_state
+import lobby_state
 
 from pico2d import *
 from character_object import *
@@ -10,6 +10,7 @@ import random
 player = None
 background = None
 running = None
+difficulty = 0
 
 def enter():
     global player, background, running
@@ -38,7 +39,7 @@ def handle_events():
                 game_framework.quit()
             elif event.type == SDL_KEYDOWN:
                 if event.key == SDLK_ESCAPE:
-                    game_framework.change_state(title_state)
+                    game_framework.change_state(lobby_state)
                 elif event.key == SDLK_RIGHT:
                     player.dirX += 1
                     player.state = 1
