@@ -7,9 +7,10 @@ image = None
 difficulty = 0
 d_image = []
 def enter():
-    global image, d_image
+    global image, d_image, difficulty
     image = load_image('res/title.png')
     d_image = [ load_image('res/easy.png'), load_image('res/normal.png'), load_image('res/hard.png') ]
+    difficulty = 0
     
 
 def exit():
