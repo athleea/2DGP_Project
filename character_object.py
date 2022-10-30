@@ -101,7 +101,35 @@ characters ={
         "speed" : 4,
         "cooldown_time" : 0,
         "hording_time" : 0,
+    },'ninja' : {
+        "size" : [50, 70],
+        0 : {"frame" : 4, "bottom" : 210, "width" : 60, "height" : 75},     #idle
+        1 : {"frame" : 6, "bottom" : 145, "width" : 60, "height" : 65},      #run
+        2 : {"frame" : 4, "bottom" : 70, "width" : 80, "height" : 75},      #run
+        3 : {"frame" : 2, "bottom" : 0, "width" : 60, "height" : 70},
+        "speed" : 4,
+        "cooldown_time" : 0,
+        "hording_time" : 0,
+    },'witch' : {
+        "size" : [50, 70],
+        0 : {"frame" : 5, "bottom" : 305, "width" : 100, "height" : 95},     #idle
+        1 : {"frame" : 2, "bottom" : 205, "width" : 100, "height" : 100},      #run
+        2 : {"frame" : 5, "bottom" : 120, "width" : 110, "height" : 85},      #run
+        3 : {"frame" : 4, "bottom" : 0, "width" : 100, "height" : 120},
+        "speed" : 4,
+        "cooldown_time" : 0,
+        "hording_time" : 0,
+    },'zombie' : {
+        "size" : [50, 70],
+        0 : {"frame" : 4, "bottom" : 145, "width" : 90, "height" : 75},     #idle
+        1 : {"frame" : 5, "bottom" : 70, "width" : 90, "height" : 75},      #run
+        2 : {"frame" : 8, "bottom" : 0, "width" : 90, "height" : 70},      #run
+        3 : None,
+        "speed" : 2,
+        "cooldown_time" : 0,
+        "hording_time" : 0,
     },
+    
 }
 
 class Character:
@@ -137,6 +165,7 @@ class Character:
     def draw_character(self):
         self.set_animation()
         self.image.clip_draw(self.frameSize[0]*self.frame, self.frameSize[1], self.frameSize[2], self.frameSize[3], self.x, self.y, 50, 80)
+        delay(0.5)
 
     def update(self):
         self.frame = (self.frame + 1) % self.frameNum
@@ -175,8 +204,7 @@ class Character:
                 case pico2d.SDLK_r:
                     self.state = 3
                     pass
-                case pico2d.SDLK_d:
-                    #character sprite test
+                case pico2d.SDLK_d: #character sprite test
                     self.state = 2
         elif event.type == SDL_KEYUP:
             match event.key:

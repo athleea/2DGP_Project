@@ -15,7 +15,7 @@ difficulty = 0
 def enter():
     global player, background, running
     #print(type(random.choice(characters.keys())))
-    player = Character('turtle', 30, 90)
+    player = Character('zombie', 30, 90)
     background = Background()
     running = True
 
