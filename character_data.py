@@ -1,8 +1,9 @@
 from pico2d import *
 import time
+from character import *
 
 characters ={
-    'Patrick_Star' : {
+    'PatrickStar' : {
         "size" : [50, 70],
         0 : {"frame" : 7, "left" : 8, "bottom" : 120, "width" : 30, "height" : 50},     #idle
         1 : {"frame" : 9, "left" : 8, "bottom" : 60, "width" : 32, "height" : 50},      #run
@@ -131,96 +132,3 @@ characters ={
     },
     
 }
-
-class Character:
-    def __init__(self, name, x, y):
-        self.image = load_image('res/{}.png'.format(name))
-        self.character = characters[name]
-
-        self.x = x
-        self.y = y
-        self.speed = self.character['speed']
-        self.dirX = 0
-        self.dirY = 0
-        self.state = 0
-
-        self.frame = 0
-        self.frameNum = 0
-        self.frameSize = (0, 0, 0, 0)
-        self.set_animation()
-
-        self.available_skill = True
-        self.active_skill_time = 0
-
-    def set_animation(self):
-        if self.character[self.state] != None:
-            self.frameNum = self.character[self.state]['frame']
-            self.frameSize = (
-                self.character[self.state]['width'],
-                self.character[self.state]['bottom'],
-                self.character[self.state]['width'],
-                self.character[self.state]['height'],
-            )
-
-    def draw_character(self):
-        self.set_animation()
-        self.image.clip_draw(self.frameSize[0]*self.frame, self.frameSize[1], self.frameSize[2], self.frameSize[3], self.x, self.y, 50, 80)
-        delay(0.5)
-
-    def update(self):
-        self.frame = (self.frame + 1) % self.frameNum
-        self.skill(time.time())
-
-        self.x += (self.dirX) * self.speed
-        self.y += (self.dirY) * self.speed
-
-        if self.y >= 520:
-            self.y = 519
-        elif self.y <= 90:
-            self.y = 91
-
-    def skill(self ,eTime):
-        if eTime - self.active_skill_time >= self.character['cooldown_time']:
-            self.available_skill = True
-            self.active_skill_time = 0
-        
-        if not self.available_skill: # 스킬 사용 중
-            if eTime - self.active_skill_time <= self.character['hording_time']:
-                self.speed = 5
-                self.state = 3
-
-    def handle_events(self, event):
-        if event.type == SDL_KEYDOWN:
-            match event.key:
-                case pico2d.SDLK_UP:
-                    self.dirY += 1
-                    self.state = 1
-                case pico2d.SDLK_DOWN:
-                    self.dirY -= 1
-                    self.state = 1
-                case pico2d.SDLK_RIGHT:
-                    self.dirX += 1
-                    self.state = 1
-                case pico2d.SDLK_r:
-                    self.state = 3
-                    pass
-                case pico2d.SDLK_d: #character sprite test
-                    self.state = 2
-        elif event.type == SDL_KEYUP:
-            match event.key:
-                case pico2d.SDLK_UP:
-                    self.dirY -= 1
-                    self.state = 0
-                case pico2d.SDLK_DOWN:
-                    self.dirY += 1
-                    self.state = 0
-                case pico2d.SDLK_RIGHT:
-                    self.dirX -= 1
-                    self.state = 0
-                case pico2d.SDLK_r:
-                    self.state = 0
-                case pico2d.SDLK_d:
-                    self.state = 0
-                    pass
-        
-        
