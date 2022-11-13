@@ -1,32 +1,37 @@
 import game_framework
 import lobby_state
+import game_world
 
-from pico2d import *
 from character import *
-from map_object import *
+from Background import Background
 
 player = None
 background = None
 difficulty = 0
 
 def enter():
-    global player, background, running
+    global player, background
     
     player = Character()
     background = Background()
 
+    game_world.add_object(player, 0)
+    game_world.add_object(background, 1)
+
 def exit():
-    global player, background
-    del background
+    game_world.clear()
 
 def update():
     player.update()
 
 def draw():
     clear_canvas()
+    draw_world()
+    update_canvas()
+
+def draw_world():
     background.draw()
     player.draw()
-    update_canvas()
 
 def handle_events():
         for event in get_events():
