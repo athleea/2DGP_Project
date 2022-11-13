@@ -1,6 +1,9 @@
 from pico2d import *
 import character_data
 import random
+import game_framework
+
+key_Idle, key_Run, key_Sturn, key_Skill, key_Speed, key_Cool_Time = range(6)
 
 RAD, RAU, UAD, UAU, DAD, DAU, RD, RU  = range(8)
 
@@ -17,6 +20,15 @@ key_event_table = {
     (SDL_KEYUP, SDLK_r): RU
 }
 
+PIXEL_PER_METER = (10.0 / 0.3)
+RUN_SPEED_KMPH = 20.0
+RUN_SPEED_MPM = (RUN_SPEED_KMPH * 1000.0 / 60)
+RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0)
+RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
+
+TIME_PER_ACTION = 0.5
+ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
+FRAMES_PER_ACTION = 8
 
 class IDLE:
     @staticmethod
@@ -24,7 +36,7 @@ class IDLE:
         #print("ENTER IDLE")
         self.dirY = 0
         self.dirX = 0
-        self.cur_state_num = NUM_IDLE
+        self.cur_state_num = key_Idle
         self.set_character()
 
     @staticmethod
@@ -33,11 +45,11 @@ class IDLE:
 
     @staticmethod
     def do(self): # 상태에 있을 때 지속적으로 행하는 행위, 숨쉬기
-        self.frame = (self.frame + 1) % self.frameCount
+        self.frame = (self.frame + self.FRAMES_PER_ACTION * self.ACTION_PER_TIME * game_framework.frame_time) % self.FRAMES_PER_ACTION
        
     @staticmethod
     def draw(self):
-        self.image.clip_draw(self.frame*self.clipWidth, self.clipBottom,
+        self.image.clip_draw(int(self.frame) *self.clipWidth, self.clipBottom,
          self.clipWidth, self.clipHeight, self.x, self.y, 50, 90)
 
 
@@ -45,21 +57,21 @@ class RUN:
     @staticmethod
     def enter(self, event):
         #print("ENTER RUN")
-        self.cur_state_num = NUM_RUN
+        self.cur_state_num = key_Run
         self.set_character()
         
         if event == RAD:
             self.dirX += 1
-        elif event == UAD:
+        if event == UAD:
             self.dirY += 1
-        elif event == DAD:
+        if event == DAD:
             self.dirY -= 1
 
-        elif event == RAU:
+        if event == RAU:
             self.dirX -= 1
-        elif event == UAU:
+        if event == UAU:
             self.dirY -= 1
-        elif event == DAU:
+        if event == DAU:
             self.dirY += 1
 
     @staticmethod
@@ -68,15 +80,15 @@ class RUN:
 
     @staticmethod
     def do(self):
-        self.frame = (self.frame + 1) % self.frameCount
         # x 좌표 변경, 달리기
-        self.x += self.dirX * self.speed
-        self.y += self.dirY * self.speed
+        self.frame = (self.frame + self.FRAMES_PER_ACTION * self.ACTION_PER_TIME * game_framework.frame_time) % self.FRAMES_PER_ACTION
+        self.x += self.dirX * self.speed * game_framework.frame_time
+        self.y += self.dirY * self.speed * game_framework.frame_time
         self.y = clamp(90, self.y, 520)
 
     @staticmethod
     def draw(self):
-        self.image.clip_draw(self.frame*self.clipWidth, self.clipBottom,
+        self.image.clip_draw(int(self.frame) *self.clipWidth, self.clipBottom,
          self.clipWidth, self.clipHeight, self.x, self.y, 50, 90)
         
 
@@ -94,12 +106,14 @@ class Character:
         self.event_que.insert(0, event)
 
     def __init__(self):
+        self.image = None
+        self.character = None
         self.x, self.y = 30, 90
         self.dirX, self.dirY = 0, 0
         self.name = ""
-        self.speed = 0
         self.frame = 0
-        self.frameCount = 0
+        self.FRAMES_PER_ACTION = 0
+        self.ACTION_PER_TIME = 0
         self.clipBottom = 0
         self.clipWidth = 0
         self.clipHeight = 0
@@ -138,13 +152,13 @@ class Character:
         self.image = load_image('res/{}.png'.format(self.name))
         self.character = character_data.characters[self.name]
 
-        self.frame = 0
-        self.frameCount = self.character[self.cur_state_num]['frame']
+        self.FRAMES_PER_ACTION = self.character[self.cur_state_num]['FramePerAction']
+        self.ACTION_PER_TIME = self.character[self.cur_state_num]['ActionPerTime']
         self.clipBottom = self.character[self.cur_state_num]['bottom']
         self.clipWidth = self.character[self.cur_state_num]['width']
         self.clipHeight = self.character[self.cur_state_num]['height']
 
-        self.speed = self.character['speed']
+        self.speed = self.character[key_Speed]
         
     def set_random_character(self):
         l1 = list(character_data.characters.keys())
