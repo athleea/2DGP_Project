@@ -2,17 +2,18 @@ import game_framework
 import lobby_state
 import game_world
 
-from character import *
-from Background import Background
+from player import *
+from background import Background
 
 player = None
+ai = None;
 background = None
 difficulty = 0
 
 def enter():
     global player, background
     
-    player = Character()
+    player = Player()
     background = Background()
 
     game_world.add_object(player, 0)

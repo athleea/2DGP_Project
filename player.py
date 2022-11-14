@@ -2,12 +2,10 @@ from pico2d import *
 import character_data
 import random
 import game_framework
+import background
 
 key_Idle, key_Run, key_Sturn, key_Skill, key_Speed, key_Cool_Time = range(6)
-
 RAD, RAU, UAD, UAU, DAD, DAU, RD, RU  = range(8)
-
-NUM_IDLE, NUM_RUN, NUM_STURN, NUM_SKILL = range(4)
 
 key_event_table = {
     (SDL_KEYDOWN, SDLK_RIGHT): RAD,
@@ -20,28 +18,18 @@ key_event_table = {
     (SDL_KEYUP, SDLK_r): RU
 }
 
-PIXEL_PER_METER = (10.0 / 0.3)
-RUN_SPEED_KMPH = 20.0
-RUN_SPEED_MPM = (RUN_SPEED_KMPH * 1000.0 / 60)
-RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0)
-RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
-
-TIME_PER_ACTION = 0.5
-ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
-FRAMES_PER_ACTION = 8
-
 class IDLE:
     @staticmethod
     def enter(self, event): # 상태에 들어갈 때 행하는 액션
-        #print("ENTER IDLE")
-        self.dirY = 0
-        self.dirX = 0
+        self.dirX, self.dirY = 0, 0
+
         self.cur_state_num = key_Idle
         self.set_character()
 
     @staticmethod
     def exit(self): # 상태를 나올 때 행하는 액션, 고개 들기
-        print("EXIT IDLE")
+        #print("EXIT IDLE")
+        pass
 
     @staticmethod
     def do(self): # 상태에 있을 때 지속적으로 행하는 행위, 숨쉬기
@@ -62,53 +50,58 @@ class RUN:
         
         if event == RAD:
             self.dirX += 1
-        if event == UAD:
+        elif event == UAD:
             self.dirY += 1
-        if event == DAD:
+        elif event == DAD:
             self.dirY -= 1
 
-        if event == RAU:
+        elif event == RAU:
             self.dirX -= 1
-        if event == UAU:
+        elif event == UAU:
             self.dirY -= 1
-        if event == DAU:
+        elif event == DAU:
             self.dirY += 1
+        
+        
 
     @staticmethod
     def exit(self):
-        print("EXIT RUN")
+        #print("EXIT RUN")
+        pass
 
     @staticmethod
     def do(self):
         # x 좌표 변경, 달리기
         self.frame = (self.frame + self.FRAMES_PER_ACTION * self.ACTION_PER_TIME * game_framework.frame_time) % self.FRAMES_PER_ACTION
+        
         self.x += self.dirX * self.speed * game_framework.frame_time
         self.y += self.dirY * self.speed * game_framework.frame_time
+        
+        #background.mapX -= self.dirX * self.speed * game_framework.frame_time
         self.y = clamp(90, self.y, 520)
 
     @staticmethod
     def draw(self):
-        self.image.clip_draw(int(self.frame) *self.clipWidth, self.clipBottom,
+        self.image.clip_draw(int(self.frame) * self.clipWidth, self.clipBottom,
          self.clipWidth, self.clipHeight, self.x, self.y, 50, 90)
         
 
 
 next_state = {
     IDLE: {RAD: RUN, UAD: RUN, DAD: RUN, RAU: RUN, UAU: RUN, DAU: RUN},
-    RUN: {RAD: IDLE, UAD: IDLE, DAD: IDLE, RAU: IDLE, UAU: IDLE, DAU: IDLE},
-
+    RUN: {RAD: RUN, UAD: RUN, DAD: RUN, RAU: RUN, UAU: RUN, DAU: RUN},
 }
 
-
-class Character:
+class Player:
 
     def add_event(self, event):
         self.event_que.insert(0, event)
 
-    def __init__(self):
+    def __init__(self, x=30, y=90):
         self.image = None
         self.character = None
-        self.x, self.y = 30, 90
+        self.x, self.y = x, y
+        self.mapX, mapY = 0, 0
         self.dirX, self.dirY = 0, 0
         self.name = ""
         self.frame = 0
@@ -120,7 +113,7 @@ class Character:
 
         self.event_que = []
         self.cur_state = IDLE
-        self.cur_state_num = NUM_IDLE
+        self.cur_state_num = key_Idle
         self.set_random_character()
         self.cur_state.enter(self, None)
         
@@ -135,13 +128,10 @@ class Character:
             self.cur_state = next_state[self.cur_state][event]
             self.cur_state.enter(self, event)
 
-        # self.frame = (self.frame + 1) % 8
-        # self.x += self.dir * 1
-        # self.x = clamp(0, self.x, 800)
 
     def draw(self):
         self.cur_state.draw(self,)
-        delay(0.05)
+        
 
     def handle_events(self, event):
         if (event.type, event.key) in key_event_table:
@@ -165,5 +155,4 @@ class Character:
         rand = random.randint(0, len(l1)-1)
         self.name = l1[rand]
 
-        
         
