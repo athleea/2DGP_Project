@@ -96,9 +96,9 @@ def fill_states(*states):
 
 import time
 frame_time = 0.0
-
+cur_time = 0.0
 def run(start_state):
-    global running, stack
+    global running, stack, frame_time, cur_time
     running = True
 
     # prepare previous states if any
@@ -114,7 +114,6 @@ def run(start_state):
         stack[-1].handle_events()
         stack[-1].update()
         stack[-1].draw()
-        global frame_time
         frame_time = time.time() - cur_time
         cur_time += frame_time
 
