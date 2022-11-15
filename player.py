@@ -1,4 +1,6 @@
 from pico2d import *
+
+import background
 import character_data
 import random
 import game_framework
@@ -63,12 +65,13 @@ class RUN:
             self.dirY += 1
 
         elif event == RD:
-            if not self.skilling:
-                if self.cool_time == 0.0 or self.cool_time < game_framework.cur_time:
-                    self.skilling = True
-                    self.skill_enter_time = game_framework.cur_time
-                    self.cool_time = self.character[key_Cool_Time] + self.skill_enter_time
-                    self.hording_time = self.character[key_Hording_Time]
+            if self.character[key_Skill] is not None:
+                if not self.skilling:
+                    if self.cool_time == 0.0 or self.cool_time < game_framework.cur_time:
+                        self.skilling = True
+                        self.skill_enter_time = game_framework.cur_time
+                        self.cool_time = self.character[key_Cool_Time] + self.skill_enter_time
+                        self.hording_time = self.character[key_Hording_Time]
 
     @staticmethod
     def exit(self, event):
@@ -85,7 +88,6 @@ class RUN:
         self.x += self.dirX * self.speed * game_framework.frame_time
         self.y += self.dirY * self.speed * game_framework.frame_time
 
-        # background.mapX -= self.dirX * self.speed * game_framework.frame_time
         self.y = clamp(90, self.y, 480)
 
         if self.skill_enter_time + self.hording_time <= game_framework.cur_time:
@@ -171,7 +173,7 @@ class Player:
     def set_random_character(self):
         l1 = list(character_data.characters.keys())
         self.name = random.choice(l1)
-        self.name = witch  # test code
+        self.name = spiderman  # test code
 
     def active_skill(self):
         pass

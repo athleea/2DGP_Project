@@ -1,11 +1,10 @@
 key_Idle, key_Run, key_Sturn, key_Skill, key_Speed, key_Cool_Time, key_Hording_Time, method_Skill = range(8)
 
-PIXEL_PER_METER = (10.0 / 0.3)
+PIXEL_PER_METER = (50.0 / 0.3)
 
-VERY_SLOW, SLOW, NORMAL, FAST, VERY_FAST = 5, 10, 15, 17, 20
+VERY_SLOW, SLOW, NORMAL, FAST, VERY_FAST = 1, 1.5, 2, 2.5, 3
 
-among, dog, ghost, hulk, human, icarus, kirby, ninja, patrick_star, pikachu, sonic, spiderman, turtle, witch, zombie = range(
-    15)
+among, dog, ghost, hulk, human, icarus, kirby, ninja, patrick_star, pikachu, sonic, spiderman, turtle, witch, zombie = range(15)
 
 
 def get_speed_pps(RUN_SPEED_KMPH):
@@ -15,10 +14,6 @@ def get_speed_pps(RUN_SPEED_KMPH):
 
     return RUN_SPEED_PPS
 
-
-TIME_PER_ACTION = 0.5
-ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
-FRAMES_PER_ACTION = 8
 
 characters = {
     patrick_star: {
@@ -139,6 +134,13 @@ characters = {
         key_Skill: None,
         key_Speed: get_speed_pps(VERY_SLOW),
         key_Cool_Time: 0,
+    }, spiderman: {
+        "name": "spiderman",
+        key_Idle: {"ActionPerTime": 1.0 / 0.5, "FramePerAction": 3, "bottom": 110, "width": 70, "height": 70},
+        key_Run: {"ActionPerTime": 1.0 / 0.5, "FramePerAction": 8, "bottom": 50, "width": 70, "height": 60},
+        key_Sturn: {"ActionPerTime": 0, "FramePerAction": 3, "bottom": 0, "width": 50, "height": 50},
+        key_Skill: None,
+        key_Speed: get_speed_pps(FAST),
+        key_Cool_Time: 0,
     },
-
 }

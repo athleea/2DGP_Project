@@ -49,6 +49,7 @@ class RUN:
         self.y += 0 * self.speed * game_framework.frame_time
 
         # background.mapX -= self.dirX * self.speed * game_framework.frame_time
+        self.x = clamp(0, self.x, 10000)
         self.y = clamp(90, self.y, 480)
 
     @staticmethod
