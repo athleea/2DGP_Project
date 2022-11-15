@@ -4,7 +4,8 @@ PIXEL_PER_METER = (10.0 / 0.3)
 
 VERY_SLOW, SLOW, NORMAL, FAST, VERY_FAST = 5, 10, 15, 17, 20
 
-among, dog, ghost, hulk, human, icarus, kirby, ninja, patrick_star, pikachu, sonic, spiderman, turtle, witch, zombie = range(15)
+among, dog, ghost, hulk, human, icarus, kirby, ninja, patrick_star, pikachu, sonic, spiderman, turtle, witch, zombie = range(
+    15)
 
 
 def get_speed_pps(RUN_SPEED_KMPH):

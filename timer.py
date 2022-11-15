@@ -10,7 +10,7 @@ class Timer:
         self.time = 0.0
 
     def draw(self):
-        self.timeText.draw(350, 570, f'TIME : {self.time:.2f}')
+        self.timeText.draw(720, 580, f'{self.time:.2f}')
 
     def update(self):
         self.time = time.time() - self.enterTime - 3

@@ -86,7 +86,7 @@ class RUN:
         self.y += self.dirY * self.speed * game_framework.frame_time
 
         # background.mapX -= self.dirX * self.speed * game_framework.frame_time
-        self.y = clamp(90, self.y, 500)
+        self.y = clamp(90, self.y, 480)
 
         if self.skill_enter_time + self.hording_time <= game_framework.cur_time:
             self.skilling = False

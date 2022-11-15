@@ -24,7 +24,7 @@ def enter():
     player = Player()
     background = Background()
     raceTimer = Timer()
-    ai = [AI(y=500), AI(y=400), AI(y=300), AI(y=200)]
+    ai = [AI(y=480), AI(y=400), AI(y=300), AI(y=200)]
 
     game_world.add_object(player, 0)
     game_world.add_object(ai, 1)

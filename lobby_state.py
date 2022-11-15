@@ -6,19 +6,21 @@ import play_state
 image = None
 difficulty = 0
 d_image = []
+
+
 def enter():
     global image, d_image, difficulty
     image = load_image('res/title.png')
-    d_image = [ load_image('res/easy.png'), load_image('res/normal.png'), load_image('res/hard.png') ]
+    d_image = [load_image('res/easy.png'), load_image('res/normal.png'), load_image('res/hard.png')]
     difficulty = 0
-    
+
 
 def exit():
     global image, d_image, difficulty
     del image
     del d_image
     del difficulty
-    
+
 
 def handle_events():
     global difficulty
@@ -42,20 +44,22 @@ def handle_events():
                 elif event.x >= 700 and event.x <= 780:
                     difficulty, play_state.difficulty = 2, 2
                     print(difficulty)
-                
 
 
 def draw():
     clear_canvas()
-    image.draw(400,300)
+    image.draw(400, 300)
     d_image[difficulty].draw(690, 165)
     update_canvas()
+
 
 def update():
     pass
 
+
 def pause():
     pass
+
 
 def resume():
     pass

@@ -6,8 +6,10 @@ objects = [[], [], []]
 def add_object(o, depth):
     objects[depth].append(o)
 
+
 def add_objects(ol, depth):
     objects[depth] += ol
+
 
 def remove_object(o):
     for layer in objects:
@@ -40,6 +42,3 @@ def clear():
         del o
     for layer in objects:
         layer.clear()
-
-
-

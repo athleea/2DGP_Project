@@ -49,7 +49,7 @@ class RUN:
         self.y += 0 * self.speed * game_framework.frame_time
 
         # background.mapX -= self.dirX * self.speed * game_framework.frame_time
-        self.y = clamp(90, self.y, 520)
+        self.y = clamp(90, self.y, 480)
 
     @staticmethod
     def draw(self):
