@@ -5,26 +5,30 @@ import ready_state
 
 from player import *
 from background import Background
+from timer import Timer
 from ai import AI
 
 gamestart = None
 player = None
 ai = None
+raceTimer = None
 background = None
 difficulty = 0
 
 
 def enter():
-    global player, background, ai, gamestart
+    global player, background, ai, gamestart, raceTimer
 
     gamestart = False
 
     player = Player()
     background = Background()
+    raceTimer = Timer()
     ai = [AI(y=500), AI(y=400), AI(y=300), AI(y=200)]
 
     game_world.add_object(player, 0)
     game_world.add_object(ai, 1)
+    game_world.add_object(timer, 1)
     game_world.add_object(background, 2)
 
 
@@ -36,9 +40,11 @@ def update():
     if not play_state.gamestart:
         game_framework.push_state(ready_state)
     else:
+        raceTimer.update()
         player.update()
         for a in ai:
             a.update()
+
 
 
 def draw():
@@ -49,9 +55,11 @@ def draw():
 
 def draw_world():
     background.draw()
+    raceTimer.draw()
     for a in ai:
         a.draw()
     player.draw()
+
 
 
 def handle_events():
