@@ -1,5 +1,6 @@
 from pico2d import *
 
+import game_world
 import background
 import character_data
 import random
@@ -152,6 +153,7 @@ class Player:
 
     def draw(self):
         self.cur_state.draw(self, )
+        draw_rectangle(*self.get_bb())
 
     def handle_events(self, event):
         if (event.type, event.key) in key_event_table:
@@ -177,3 +179,13 @@ class Player:
 
     def active_skill(self):
         pass
+
+    def get_pos(self):
+        return self.x, self.y
+        
+    def get_bb(self):
+        return self.x - 25, self.y - 45, self.x+25, self.y+45
+    
+    def handle_collision(self, other, group):
+        if group == 'player:stone':
+            print("collide")

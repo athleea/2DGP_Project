@@ -142,5 +142,6 @@ characters = {
         key_Skill: None,
         key_Speed: get_speed_pps(FAST),
         key_Cool_Time: 0,
-    },
+    }, 
 }
+

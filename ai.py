@@ -1,4 +1,6 @@
 from pico2d import *
+
+import game_world
 import character_data
 import random
 import game_framework
@@ -115,5 +117,16 @@ class AI:
     def set_random_character(self):
         l1 = list(character_data.characters.keys())
         self.name = random.choice(l1)
+    
+    def handle_collision(self, other, group):
+        if group == 'ai:stone':
+            print("collide")
+    
+    def get_pos(self):
+        return self.x, self.y
+
+    def get_bb(self):
+        return self.x - 25, self.y - 45, self.x+25, self.y+45
+        
 
 

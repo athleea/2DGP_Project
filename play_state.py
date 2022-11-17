@@ -2,9 +2,9 @@ import game_framework
 import lobby_state
 import game_world
 import ready_state
-import lines
 
 from player import *
+from stone import Stone
 from background import Background
 from lines import *
 from timer import Timer
@@ -13,20 +13,21 @@ from map import *
 
 gamestart = None
 player = None
-ai = None
+ai = []
 raceTimer = None
-background = None
+bg = None
 startLine = None
-transformLine = None
+transformLine = []
 finishLine = None
 map = None
-pin = None
+pin = []
 difficulty = 0
+stones = []
 
 observer = None
 
 def enter():
-    global player, background, ai, gamestart, raceTimer, startLine, finishLine, transformLine, map, observer, pin
+    global player, bg, ai, gamestart, raceTimer, startLine, finishLine, transformLine, map, observer, pin, stones
     gamestart = False
 
     observer = [[],[],[],[],[]]
@@ -37,25 +38,30 @@ def enter():
     player = Player()
     ai = [AI(y=480), AI(y=400), AI(y=300), AI(y=200)]
 
+    stones = [Stone() for i in range(5)]
 
-    background = Background()
+    bg = Background()
     startLine = StartLine()
-    transformLine = [TransformLine(x=1500), TransformLine(x=3000), TransformLine(x=4500), TransformLine(x=6000), TransformLine(x=7500), TransformLine(x=9000)]
+    transformLine = [TransformLine(x=1500*i) for i in range(1,5+1)] 
     finishLine = FinishLine()
 
+    for i in range(4):
+        observer[i] = ai[i].get_pos()
+    observer[4] = player.get_pos()
 
-
-
-    game_world.add_object(player, 0)
-    game_world.add_object(ai, 1)
-    game_world.add_object(timer, 1)
+    game_world.add_object(player, 2)
+    game_world.add_objects(ai, 2)
+    game_world.add_objects(stones, 2)
+    game_world.add_object(raceTimer, 1)
     game_world.add_object(map, 1)
-    game_world.add_object(pin, 1)
-    game_world.add_object(background, 2)
-    game_world.add_object(startLine, 2)
-    game_world.add_object(finishLine, 2)
-    game_world.add_object(transformLine, 2)
+    game_world.add_objects(pin, 1)
+    game_world.add_object(bg, 0)
+    game_world.add_object(startLine, 1)
+    game_world.add_object(finishLine, 1)
+    game_world.add_objects(transformLine, 1)
 
+    game_world.add_collision_pairs(player, stones, 'player:stone')
+    game_world.add_collision_pairs(ai, stones, 'ai:stone')
 
 def exit():
     game_world.clear()
@@ -65,20 +71,17 @@ def update():
     if not play_state.gamestart:
         game_framework.push_state(ready_state)
     else:
-        raceTimer.update()
-        player.update()
-        for a in ai:
-            a.update()
+        for game_object in game_world.all_objects():
+            game_object.update()
+        
         for i in range(4):
-            observer[i] = [ai[i].x, ai[i].y]
-        observer[4] = [player.x, player.y]
+            observer[i] = ai[i].get_pos()
+        observer[4] = player.get_pos()
 
-        for p in pin:
-            p.update()
-
-
-
-
+        for a, b, group in game_world.all_collision_pairs():
+            if collide(a, b):
+                a.handle_collision(b, group)
+                b.handle_collision(a, group)
 
 def draw():
     clear_canvas()
@@ -87,22 +90,8 @@ def draw():
 
 
 def draw_world():
-    background.draw()
-    startLine.draw()
-    finishLine.draw()
-    for tf in transformLine:
-        tf.draw()
-    raceTimer.draw()
-    map.draw()
-
-    for p in pin:
-        p.draw()
-
-    for a in ai:
-        a.draw()
-    player.draw()
-
-
+    for game_object in game_world.all_objects():
+        game_object.draw()
 
 def handle_events():
     for event in get_events():
@@ -113,10 +102,19 @@ def handle_events():
         else:
             player.handle_events(event)
 
-
 def pause():
     pass
 
-
 def resume():
     pass
+
+def collide(a, b):
+    left_a, bottom_a, right_a, top_a = a.get_bb()
+    left_b, bottom_b, right_b, top_b = b.get_bb()
+
+    if left_a > right_b: return False
+    if right_a < left_b: return False
+    if top_a < bottom_b : return False
+    if bottom_a > top_b : return False
+
+    return True
