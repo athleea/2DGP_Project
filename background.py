@@ -10,4 +10,4 @@ class Background:
         pass
 
     def draw(self):
-        self.image.draw(30 - mapX, 300)
+        self.image.draw(30, 300)

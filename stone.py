@@ -34,7 +34,7 @@ class Stone:
 
     def handle_collision(self, other, group):
         if group == 'player:stone':
-            game_world.remove_object(self)
+            #game_world.remove_object(self)
             pass
 
     def get_bb(self):

@@ -121,6 +121,8 @@ class AI:
     def handle_collision(self, other, group):
         if group == 'ai:stone':
             print("collide")
+        elif group == 'player:t_line':
+            self.set_random_character()
     
     def get_pos(self):
         return self.x, self.y

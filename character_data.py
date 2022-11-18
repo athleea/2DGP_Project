@@ -32,7 +32,7 @@ characters = {
         key_Skill: {"ActionPerTime": 0, "FramePerAction": 6, "bottom": 0, "width": 32, "height": 27},
         key_Speed: get_speed_pps(FAST),
         key_Cool_Time: 10,
-
+        key_Hording_Time: 5
     }, hulk: {
         "name": "hulk",
         key_Idle: {"ActionPerTime": 1.0 / 0.5, "FramePerAction": 3, "bottom": 200, "width": 60, "height": 90},

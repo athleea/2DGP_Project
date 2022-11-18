@@ -42,23 +42,27 @@ def enter():
 
     bg = Background()
     startLine = StartLine()
-    transformLine = [TransformLine(x=1500*i) for i in range(1,5+1)] 
+    transformLine = [TransformLine(x=1500*i) for i in range(1,5+1)]
+    #transformLine = TransformLine()
     finishLine = FinishLine()
 
     for i in range(4):
         observer[i] = ai[i].get_pos()
     observer[4] = player.get_pos()
 
-    game_world.add_object(player, 2)
-    game_world.add_objects(ai, 2)
     game_world.add_objects(stones, 2)
+    game_world.add_objects(ai, 2)
+    game_world.add_object(player, 2)
+
     game_world.add_object(raceTimer, 1)
     game_world.add_object(map, 1)
     game_world.add_objects(pin, 1)
-    game_world.add_object(bg, 0)
     game_world.add_object(startLine, 1)
     game_world.add_object(finishLine, 1)
     game_world.add_objects(transformLine, 1)
+    #game_world.add_object(transformLine, 1)
+
+    game_world.add_object(bg, 0)
 
     game_world.add_collision_pairs(player, stones, 'player:stone')
     game_world.add_collision_pairs(ai, stones, 'ai:stone')
@@ -75,15 +79,15 @@ def update():
     else:
         for game_object in game_world.all_objects():
             game_object.update()
-        
-        for i in range(4):
-            observer[i] = ai[i].get_pos()
-        observer[4] = player.get_pos()
 
         for a, b, group in game_world.all_collision_pairs():
             if collide(a, b):
                 a.handle_collision(b, group)
                 b.handle_collision(a, group)
+
+        for i in range(4):
+            observer[i] = ai[i].get_pos()
+        observer[4] = player.get_pos()
 
 def draw():
     clear_canvas()

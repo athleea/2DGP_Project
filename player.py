@@ -1,15 +1,14 @@
 from pico2d import *
 
-import game_world
 import background
 import character_data
 import random
 import game_framework
-import play_state
-import ready_state
+
 
 key_Idle, key_Run, key_Sturn, key_Skill, key_Speed, key_Cool_Time, key_Hording_Time = range(7)
 RAD, RAU, UAD, UAU, DAD, DAU, RD, END_SKILL = range(8)
+
 among, dog, ghost, hulk, human, icarus, kirby, ninja, patrick_star, pikachu, sonic, spiderman, turtle, witch, zombie = range(15)
 
 key_event_table = {
@@ -47,8 +46,6 @@ class IDLE:
 class RUN:
     @staticmethod
     def enter(self, event):
-        print("ENTER RUN")
-
         self.set_state(key_Run)
 
         if event == RAD:
@@ -76,7 +73,6 @@ class RUN:
 
     @staticmethod
     def exit(self, event):
-        print("EXIT RUN")
         if event == RD:
             self.active_skill()
         pass
@@ -95,20 +91,30 @@ class RUN:
         if self.skill_enter_time + self.hording_time <= game_framework.cur_time:
             self.skilling = False
 
+        if self.sturn_enter_time + self.sturn_time <= game_framework.cur_time:
+            self.sturning = False
+
     @staticmethod
     def draw(self):
         if self.skilling:
             self.set_state(key_Skill)
+        elif self.sturning:
+            self.set_state(key_Sturn)
+            self.character[key_Sturn]["ActionPerTime"] = 2
+            self.speed = 0
         else:
             self.set_state(key_Run)
+
 
         self.image.clip_draw(int(self.frame) * self.clipWidth, self.clipBottom, self.clipWidth, self.clipHeight, self.x,
                              self.y, 50, 90)
 
 
+
 next_state = {
     IDLE: {RAD: RUN, UAD: RUN, DAD: RUN, RAU: RUN, UAU: RUN, DAU: RUN},
-    RUN: {RAD: RUN, UAD: RUN, DAD: RUN, RAU: RUN, UAU: RUN, DAU: RUN, RD: RUN},
+    RUN: {RAD: RUN, UAD: RUN, DAD: RUN, RAU: RUN, UAU: RUN, DAU: RUN, RD: RUN, },
+
 }
 
 
@@ -118,8 +124,10 @@ class Player:
         self.event_que.insert(0, event)
 
     def __init__(self, x=30, y=100):
+        self.speed = 0.0
         self.image = None
         self.character = None
+
         self.x, self.y = x, y
         self.mapX, mapY = 0, 0
         self.dirX, self.dirY = 0, 0
@@ -136,16 +144,18 @@ class Player:
         self.skill_enter_time = 0.0
         self.skilling = False
 
+        self.sturning = False
+        self.sturn_enter_time = 0.0
+        self.sturn_time = 0.0
+
         self.event_que = []
         self.cur_state = IDLE
         self.set_random_character()
         self.cur_state.enter(self, None)
 
     def update(self):
-
         self.cur_state.do(self)
 
-        # 이벤트를 확인해서, 이벤트가 있으면 변환 처리
         if self.event_que:
             event = self.event_que.pop()
             self.cur_state.exit(self, event)
@@ -189,4 +199,6 @@ class Player:
     
     def handle_collision(self, other, group):
         if group == 'player:stone':
-            print("collide")
+            self.sturn_enter_time = game_framework.cur_time
+            self.sturn_time = 3
+
