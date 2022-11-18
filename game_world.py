@@ -27,6 +27,7 @@ def all_objects():
 
 
 def clear():
+    global collision_group
     for o in all_objects():
         del o
     for layer in objects:

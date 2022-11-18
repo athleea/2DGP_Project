@@ -28,7 +28,7 @@ def update():
     elif game_framework.cur_time < enter_time + 3:
         countdown = 1
     elif game_framework.cur_time >= enter_time + 3:
-        play_state.gamestart = True
+        play_state.game_start = True
         game_framework.pop_state()
 
 

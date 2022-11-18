@@ -82,7 +82,7 @@ class RUN:
         # x 좌표 변경, 달리기
         self.frame = (self.frame + self.FRAMES_PER_ACTION * self.ACTION_PER_TIME * game_framework.frame_time) % self.FRAMES_PER_ACTION
 
-        background.mapX += self.dirX * self.speed * game_framework.frame_time
+        #background.mapX += self.dirX * self.speed * game_framework.frame_time
         self.x += self.dirX * self.speed * game_framework.frame_time
         self.y += self.dirY * self.speed * game_framework.frame_time
 
@@ -164,7 +164,7 @@ class Player:
 
     def draw(self):
         self.cur_state.draw(self, )
-        draw_rectangle(*self.get_bb())
+        #draw_rectangle(*self.get_bb())
 
     def handle_events(self, event):
         if (event.type, event.key) in key_event_table:

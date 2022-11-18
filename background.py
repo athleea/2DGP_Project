@@ -1,7 +1,5 @@
 from pico2d import *
 
-mapX = 0
-
 class Background:
     def __init__(self):
         self.image = load_image('res/background.png')

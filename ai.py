@@ -101,6 +101,7 @@ class AI:
 
     def draw(self):
         self.cur_state.draw(self, )
+        draw_rectangle(*self.get_bb())
 
     def set_character(self):
         self.character = character_data.characters[self.name]
@@ -120,9 +121,7 @@ class AI:
     
     def handle_collision(self, other, group):
         if group == 'ai:stone':
-            print("collide")
-        elif group == 'player:t_line':
-            self.set_random_character()
+            pass
     
     def get_pos(self):
         return self.x, self.y

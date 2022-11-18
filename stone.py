@@ -25,7 +25,7 @@ class Stone:
 
     def draw(self):
         self.image.clip_draw(int(self.frame) * stone['width'], stone['bottom'], stone['width'], stone['height'], self.x, self.y, 32, 46)
-        draw_rectangle(*self.get_bb())
+        #draw_rectangle(*self.get_bb())
 
 
     def update(self):
