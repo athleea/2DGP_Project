@@ -17,7 +17,7 @@ class StartLine:
 
 class TransformLine:
 
-    def __init__(self, x=400):
+    def __init__(self, x=300):
         self.image = load_image('res/transform_line.png')
         self.x = x
         self.y = 267
@@ -37,10 +37,12 @@ class TransformLine:
         if group == 'ai:t_line':
             if not self.check_in_t_list(other):
                 self.t_list.append(other)
+                print(other.name, "collision")
                 other.set_random_character()
         if group == 'player:t_line':
             if not self.check_in_t_list(other):
                 self.t_list.append(other)
+                print(other.name, "collision")
                 other.set_random_character()
             pass
 
@@ -54,7 +56,7 @@ class FinishLine:
 
     def __init__(self):
         self.image = load_image('res/finish_line.png')
-        self.x = 1000
+        self.x = 700
         self.y = 267
 
     def update(self):
