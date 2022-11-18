@@ -1,6 +1,6 @@
 from pico2d import *
 
-mapX = 400
+mapX = 0
 
 class Background:
     def __init__(self):
@@ -10,4 +10,4 @@ class Background:
         pass
 
     def draw(self):
-        self.image.draw(mapX, 300)
+        self.image.draw(30 - mapX, 300)

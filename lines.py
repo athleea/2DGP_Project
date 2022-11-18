@@ -1,5 +1,5 @@
 from pico2d import *
-
+import background
 
 class StartLine:
 
@@ -10,7 +10,7 @@ class StartLine:
         pass
 
     def draw(self):
-        self.image.draw(25, 267)
+        self.image.draw(25 - background.mapX, 267)
 
 
 class TransformLine:
@@ -23,7 +23,7 @@ class TransformLine:
         pass
 
     def draw(self):
-        self.image.draw(self.x, 267)
+        self.image.draw(self.x - background.mapX, 267)
 
 
 class FinishLine:
@@ -35,4 +35,4 @@ class FinishLine:
         pass
 
     def draw(self):
-        self.image.draw(9975, 267)
+        self.image.draw(9975 - background.mapX, 267)

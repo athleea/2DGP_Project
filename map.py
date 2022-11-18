@@ -2,6 +2,7 @@ from pico2d import *
 
 import play_state
 
+
 class Map:
     def __init__(self):
         self.image = load_image('res/map.png')

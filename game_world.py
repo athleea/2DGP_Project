@@ -11,15 +11,6 @@ def add_objects(ol, depth):
 
 def remove_object(o):
     for layer in objects:
-        if o in layer:
-            layer.remove(o)
-            del o
-            return
-    raise ValueError('Trying destroy non existing object')
-
-
-def remove_object(o):
-    for layer in objects:
         try:
             layer.remove(o)
             del o

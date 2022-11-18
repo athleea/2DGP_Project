@@ -27,7 +27,7 @@ stones = []
 observer = None
 
 def enter():
-    global player, bg, ai, gamestart, raceTimer, startLine, finishLine, transformLine, map, observer, pin, stones
+    global player, bg, ai, gamestart, raceTimer, startLine, finishLine, transformLine, map, observer, pin, stones, mapX
     gamestart = False
 
     observer = [[],[],[],[],[]]
@@ -62,6 +62,8 @@ def enter():
 
     game_world.add_collision_pairs(player, stones, 'player:stone')
     game_world.add_collision_pairs(ai, stones, 'ai:stone')
+    game_world.add_collision_pairs(player, transformLine, 'player:t_line')
+    game_world.add_collision_pairs(ai, transformLine, 'ai:t_line')
 
 def exit():
     game_world.clear()

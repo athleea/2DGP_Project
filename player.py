@@ -86,6 +86,7 @@ class RUN:
         # x 좌표 변경, 달리기
         self.frame = (self.frame + self.FRAMES_PER_ACTION * self.ACTION_PER_TIME * game_framework.frame_time) % self.FRAMES_PER_ACTION
 
+        background.mapX += self.dirX * self.speed * game_framework.frame_time
         self.x += self.dirX * self.speed * game_framework.frame_time
         self.y += self.dirY * self.speed * game_framework.frame_time
 
@@ -175,7 +176,7 @@ class Player:
     def set_random_character(self):
         l1 = list(character_data.characters.keys())
         self.name = random.choice(l1)
-        self.name = spiderman  # test code
+        #self.name = spiderman  # test code
 
     def active_skill(self):
         pass
