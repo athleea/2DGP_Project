@@ -1,15 +1,17 @@
 from pico2d import *
+from skills import *
 
-import background
+import game_world
 import character_data
 import random
 import game_framework
 
+key_Idle, key_Run, key_Sturn, key_Skill, key_Speed, key_Cool_Time, key_Skill_Application_Time, key_Skill_Text = range(8)
 
-key_Idle, key_Run, key_Sturn, key_Skill, key_Speed, key_Cool_Time, key_Hording_Time = range(7)
 RAD, RAU, UAD, UAU, DAD, DAU, RD, END_SKILL = range(8)
-
-among, dog, ghost, hulk, human, icarus, kirby, ninja, patrick_star, pikachu, sonic, spiderman, turtle, witch, zombie = range(15)
+among, dog, ghost, hulk, human, icarus, kirby, ninja, patrick_star, pikachu, sonic, spiderman, turtle, witch, zombie = range(
+    15)
+clip_left, clip_bottom, clip_width, clip_height = range(4)
 
 key_event_table = {
     (SDL_KEYDOWN, SDLK_RIGHT): RAD,
@@ -24,133 +26,227 @@ key_event_table = {
 
 class IDLE:
     @staticmethod
-    def enter(self, event):  # 상태에 들어갈 때 행하는 액션
-        print("ENTER IDLE")
-        self.dirX, self.dirY = 0, 0
-        self.set_state(key_Idle)
+    def enter(self, event):
+        self.set_state_image_and_clip_size(key_Idle)
+        self.skill_processing = False
 
     @staticmethod
-    def exit(self, event):  # 상태를 나올 때 행하는 액션, 고개 들기
-        print("EXIT IDLE")
-        pass
+    def exit(self, event):
+        if event == RD:
+            if self.cool_down is False:
+                time = game_framework.cur_time
+                self.skill_start_time = time
+                self.skill_cool_time = self.character_data[key_Cool_Time] + time
 
     @staticmethod
-    def do(self):  # 상태에 있을 때 지속적으로 행하는 행위, 숨쉬기
-        self.frame = (self.frame + self.FRAMES_PER_ACTION * self.ACTION_PER_TIME * game_framework.frame_time) % self.FRAMES_PER_ACTION
+    def do(self):
+        self.frame = (
+                             self.frame + self.frame_per_action * self.action_per_time * game_framework.frame_time) % self.frame_per_action
+
+        if self.skill_cool_time <= game_framework.cur_time:
+            self.cool_down = False
 
     @staticmethod
     def draw(self):
-        self.image.clip_draw(int(self.frame) * self.clipWidth, self.clipBottom, self.clipWidth, self.clipHeight, self.x, self.y, 50, 90)
+        self.image.clip_draw(
+            int(self.frame) * self.clip_size[clip_left],
+            self.clip_size[clip_bottom],
+            self.clip_size[clip_width],
+            self.clip_size[clip_height],
+            self.x, self.y, 50, 90)
 
 
 class RUN:
     @staticmethod
     def enter(self, event):
-        self.set_state(key_Run)
+        self.set_state_image_and_clip_size(key_Run)
+        self.speed = self.character_data[key_Speed]
 
         if event == RAD:
             self.dirX += 1
         elif event == UAD:
             self.dirY += 1
         elif event == DAD:
-            self.dirY -= 1
+            self.dirY += -1
 
         elif event == RAU:
             self.dirX = 0
         elif event == UAU:
-            self.dirY -= 1
+            self.dirY += -1
         elif event == DAU:
             self.dirY += 1
-
-        elif event == RD:
-            if self.character[key_Skill] is not None:
-                if not self.skilling:
-                    if self.cool_time == 0.0 or self.cool_time < game_framework.cur_time:
-                        self.skilling = True
-                        self.skill_enter_time = game_framework.cur_time
-                        self.cool_time = self.character[key_Cool_Time] + self.skill_enter_time
-                        self.hording_time = self.character[key_Hording_Time]
 
     @staticmethod
     def exit(self, event):
         if event == RD:
-            self.active_skill()
-        pass
+            if self.cool_down is False:
+                time = game_framework.cur_time
+                self.skill_start_time = time
+                self.skill_cool_time = self.character_data[key_Cool_Time] + time
 
     @staticmethod
     def do(self):
-        # x 좌표 변경, 달리기
-        self.frame = (self.frame + self.FRAMES_PER_ACTION * self.ACTION_PER_TIME * game_framework.frame_time) % self.FRAMES_PER_ACTION
+        self.frame = (
+                             self.frame + self.frame_per_action * self.action_per_time * game_framework.frame_time) % self.frame_per_action
 
-        #background.mapX += self.dirX * self.speed * game_framework.frame_time
         self.x += self.dirX * self.speed * game_framework.frame_time
         self.y += self.dirY * self.speed * game_framework.frame_time
 
         self.y = clamp(90, self.y, 480)
 
-        if self.skill_enter_time + self.hording_time <= game_framework.cur_time:
-            self.skilling = False
-
-        if self.sturn_enter_time + self.sturn_time <= game_framework.cur_time:
-            self.sturning = False
+        # 스킬 사용 활성화
+        if self.skill_cool_time <= game_framework.cur_time:
+            self.cool_down = False
 
     @staticmethod
     def draw(self):
-        if self.skilling:
-            self.set_state(key_Skill)
-        elif self.sturning:
-            self.set_state(key_Sturn)
-            self.character[key_Sturn]["ActionPerTime"] = 2
-            self.speed = 0
+        self.image.clip_draw(
+            int(self.frame) * self.clip_size[clip_left],
+            self.clip_size[clip_bottom],
+            self.clip_size[clip_width],
+            self.clip_size[clip_height],
+            self.x, self.y, 50, 90)
+
+
+class SKILL:
+    @staticmethod
+    def enter(self, event):  # 상태에 들어갈 때 행하는 액션
+        if event == RAD:
+            self.dirX += 1
+        elif event == UAD:
+            self.dirY += 1
+        elif event == DAD:
+            self.dirY += -1
+
+        elif event == RAU:
+            self.dirX += -1
+        elif event == UAU:
+            self.dirY += -1
+        elif event == DAU:
+            self.dirY += 1
+
+        if self.skill_processing is True:
+            self.set_state_image_and_clip_size(key_Skill)
+            self.skill_application_time = self.character_data[key_Skill_Application_Time]
+        elif self.character_data[key_Skill] is not None and self.cool_down is False:
+            self.set_state_image_and_clip_size(key_Skill)
+            self.skill_application_time = self.character_data[key_Skill_Application_Time]
         else:
-            self.set_state(key_Run)
+            self.add_event(END_SKILL)
 
+    @staticmethod
+    def exit(self, event):
+        pass
 
-        self.image.clip_draw(int(self.frame) * self.clipWidth, self.clipBottom, self.clipWidth, self.clipHeight, self.x,
-                             self.y, 50, 90)
+    @staticmethod
+    def do(self):
+        self.skill_processing = True
+        self.frame = (
+                             self.frame + self.frame_per_action * self.action_per_time * game_framework.frame_time) % self.frame_per_action
 
+        if self.skill_start_time + self.skill_application_time <= game_framework.cur_time:
+            self.cool_down = True
+            self.add_event(END_SKILL)
+
+        self.x += self.dirX * self.speed * game_framework.frame_time
+        self.y += self.dirY * self.speed * game_framework.frame_time
+
+        self.y = clamp(90, self.y, 480)
+
+    @staticmethod
+    def draw(self):
+        self.image.clip_draw(
+            int(self.frame) * self.clip_size[clip_left],
+            self.clip_size[clip_bottom],
+            self.clip_size[clip_width],
+            self.clip_size[clip_height],
+            self.x, self.y, 50, 90)
 
 
 next_state = {
-    IDLE: {RAD: RUN, UAD: RUN, DAD: RUN, RAU: RUN, UAU: RUN, DAU: RUN},
-    RUN: {RAD: RUN, UAD: RUN, DAD: RUN, RAU: RUN, UAU: RUN, DAU: RUN, RD: RUN, },
-
+    IDLE: {RAD: RUN, UAD: RUN, DAD: RUN, RAU: RUN, UAU: RUN, DAU: RUN, RD: SKILL, END_SKILL: IDLE},
+    RUN: {RAD: RUN, UAD: RUN, DAD: RUN, RAU: RUN, UAU: RUN, DAU: RUN, RD: SKILL, END_SKILL: RUN},
+    SKILL: {RAD: SKILL, UAD: SKILL, DAD: SKILL, RAU: SKILL, UAU: SKILL, DAU: SKILL, RD: SKILL, END_SKILL: RUN}
 }
 
 
-class Player:
+class Character:
+    def __init__(self, x, y):
+        self.image = None
+        self.frame = 0
+        self.clip_size = {clip_left: 0, clip_bottom: 0, clip_width: 0, clip_height: 0}
+        self.frame_per_action = 0
+        self.action_per_time = 0
+
+        self.character_name = ""
+        self.character_data = None
+        self.x, self.y = x, y
+        self.dirX, self.dirY = 0, 0
+        self.speed = 0.0
+        self.cur_state = IDLE
+
+        self.cool_down = False
+        self.skill_processing = False
+        self.skill_cool_time = 0
+        self.skill_start_time = 0
+        self.skill_end_time = 0
+        self.skill_application_time = 0.0
+
+        self.event_que = []
 
     def add_event(self, event):
         self.event_que.insert(0, event)
 
+    def set_speed(self):
+        self.speed = self.character_data[key_Speed]
+
+    def set_clip_size(self, left, bottom, width, height):
+        self.clip_size[clip_left] = left
+        self.clip_size[clip_bottom] = bottom
+        self.clip_size[clip_width] = width
+        self.clip_size[clip_height] = height
+
+    def set_character_data(self, character_name):
+        self.character_data = character_data.characters[character_name]
+        self.character_name = character_name
+
+    def set_random_character(self, state=key_Idle):
+        random_name = random.choice(list(character_data.characters.keys()))
+        # self.set_character_data(sonic)
+        self.set_character_data(random_name)
+        self.set_state_image_and_clip_size(state)
+        self.set_speed()
+        self.cool_down = False
+        self.skill_processing = False
+        self.skill_cool_time = 0
+        self.skill_start_time = 0
+        self.skill_end_time = 0
+        self.skill_application_time = 0.0
+
+    def set_state_image_and_clip_size(self, state=key_Idle):
+        self.image = load_image('res/{}.png'.format(self.character_data['name']))
+        if self.character_data[state] is not None:
+            self.frame_per_action = self.character_data[state]['FramePerAction']
+            self.action_per_time = self.character_data[state]['ActionPerTime']
+            self.set_clip_size(
+                left=self.character_data[state]['width'],
+                bottom=self.character_data[state]['bottom'],
+                width=self.character_data[state]['width'],
+                height=self.character_data[state]['height'],
+            )
+
+    def get_pos(self):
+        return self.x, self.y
+
+    def get_bb(self):
+        return self.x - 25, self.y - 45, self.x + 25, self.y + 45
+
+
+class Player(Character):
     def __init__(self, x=30, y=100):
-        self.speed = 0.0
-        self.image = None
-        self.character = None
-
-        self.x, self.y = x, y
-        self.mapX, mapY = 0, 0
-        self.dirX, self.dirY = 0, 0
-        self.name = ""
-        self.frame = 0
-        self.FRAMES_PER_ACTION = 0
-        self.ACTION_PER_TIME = 0
-        self.clipBottom = 0
-        self.clipWidth = 0
-        self.clipHeight = 0
-
-        self.cool_time = 0.0
-        self.hording_time = 0.0
-        self.skill_enter_time = 0.0
-        self.skilling = False
-
-        self.sturning = False
-        self.sturn_enter_time = 0.0
-        self.sturn_time = 0.0
-
-        self.event_que = []
-        self.cur_state = IDLE
+        super().__init__(x, y)
         self.set_random_character()
+        self.set_state_image_and_clip_size(key_Idle)
         self.cur_state.enter(self, None)
 
     def update(self):
@@ -163,42 +259,14 @@ class Player:
             self.cur_state.enter(self, event)
 
     def draw(self):
-        self.cur_state.draw(self, )
-        #draw_rectangle(*self.get_bb())
+        self.cur_state.draw(self)
+        # draw_rectangle(*self.get_bb())
 
     def handle_events(self, event):
         if (event.type, event.key) in key_event_table:
             key_event = key_event_table[(event.type, event.key)]
             self.add_event(key_event)
 
-    def set_state(self, cur_state):
-        self.character = character_data.characters[self.name]
-        self.image = load_image('res/{}.png'.format(self.character["name"]))
-        self.speed = self.character[key_Speed]
-
-        if self.character[cur_state] is not None:
-            self.FRAMES_PER_ACTION = self.character[cur_state]['FramePerAction']
-            self.ACTION_PER_TIME = self.character[cur_state]['ActionPerTime']
-            self.clipBottom = self.character[cur_state]['bottom']
-            self.clipWidth = self.character[cur_state]['width']
-            self.clipHeight = self.character[cur_state]['height']
-
-    def set_random_character(self):
-        l1 = list(character_data.characters.keys())
-        self.name = random.choice(l1)
-        #self.name = spiderman  # test code
-
-    def active_skill(self):
-        pass
-
-    def get_pos(self):
-        return self.x, self.y
-        
-    def get_bb(self):
-        return self.x - 25, self.y - 45, self.x+25, self.y+45
-    
     def handle_collision(self, other, group):
-        if group == 'player:stone':
-            self.sturn_enter_time = game_framework.cur_time
-            self.sturn_time = 3
-
+        if group == 'character:stone':
+            pass

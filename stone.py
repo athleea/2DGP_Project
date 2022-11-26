@@ -17,25 +17,26 @@ class Stone:
     image = None
 
     def __init__(self):
-        if Stone.image == None:
+        if Stone.image is None:
             Stone.image = load_image('res/rock.png')
-        self.x, self.y = 800, random.randint(100, 480)
-        self.fall_speed = character_data.get_speed_pps(random.randint(1, 3))
+        self.x, self.y = 800, 50 * random.randint(2,8)
+        self.speed = character_data.get_speed_pps(random.randint(1, 5))
         self.frame = 0 
 
     def draw(self):
         self.image.clip_draw(int(self.frame) * stone['width'], stone['bottom'], stone['width'], stone['height'], self.x, self.y, 32, 46)
-        #draw_rectangle(*self.get_bb())
+        draw_rectangle(*self.get_bb())
 
 
     def update(self):
         self.frame = (self.frame + stone['FramePerAction'] * stone['ActionPerTime'] * game_framework.frame_time) % stone['FramePerAction']
-        self.x -= self.fall_speed * game_framework.frame_time
+        self.x -= self.speed * game_framework.frame_time
+
+        if self.x == 0:
+            game_world.remove_object(self)
 
     def handle_collision(self, other, group):
-        if group == 'player:stone':
-            #game_world.remove_object(self)
-            pass
+        game_world.remove_object(self)
 
     def get_bb(self):
-        return self.x - 16, self.y - 23, self.x + 16, self.y + 23
+        return self.x - 15, self.y - 15, self.x + 15, self.y + 15

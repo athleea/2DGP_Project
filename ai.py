@@ -169,7 +169,7 @@ class AI:
             self.clipWidth = self.character[cur_state]['width']
             self.clipHeight = self.character[cur_state]['height']
 
-    def set_random_character(self):
+    def set_random_character(self, state=key_Idle):
         l1 = list(character_data.characters.keys())
         self.name = random.choice(l1)
         # self.name = spiderman  # test code
