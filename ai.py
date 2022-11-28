@@ -5,7 +5,6 @@ import game_framework
 from character import *
 
 
-
 key_event_table = {
     (SDL_KEYDOWN, SDLK_RIGHT): RAD,
     (SDL_KEYDOWN, SDLK_UP): UAD,
@@ -39,6 +38,7 @@ class IDLE:
         if self.skill_cool_time <= game_framework.cur_time:
             self.cool_down = False
 
+
     @staticmethod
     def draw(self):
         sx = self.x - server.background.window_left
@@ -55,7 +55,8 @@ class RUN:
     @staticmethod
     def enter(self, event):
         self.set_state_image_and_clip_size(key_Run)
-        if self.debuff is False:
+
+        if not self.debuff:
             self.speed = self.character_data[key_Speed]
 
         if event == RAD:
@@ -82,16 +83,19 @@ class RUN:
 
     @staticmethod
     def do(self):
-        self.frame = (self.frame + self.frame_per_action * self.action_per_time * game_framework.frame_time) % self.frame_per_action
+        world_cur_time = game_framework.cur_time
+        frame_time = game_framework.frame_time
 
-        self.x += self.dirX * self.speed * game_framework.frame_time
-        self.y += self.dirY * self.speed * game_framework.frame_time
+        self.frame = (self.frame + self.frame_per_action * self.action_per_time * frame_time) % self.frame_per_action
+
+        self.x += self.dirX * self.speed * frame_time
+        self.y += self.dirY * self.speed * frame_time
 
         self.x = clamp(50, self.x, server.background.width - 1 - 50)
         self.y = clamp(100, self.y, server.background.height - 1 - 100)
 
         # 스킬 사용 활성화
-        if self.skill_cool_time <= game_framework.cur_time:
+        if self.skill_cool_time <= world_cur_time:
             self.cool_down = False
 
     @staticmethod
@@ -109,6 +113,7 @@ class RUN:
 class SKILL:
     @staticmethod
     def enter(self, event):
+
         if event == RAD:
             self.dirX += 1
         elif event == UAD:
@@ -123,17 +128,19 @@ class SKILL:
         elif event == DAU:
             self.dirY += 1
 
-        if self.buff is False or self.debuff is False:
-            self.speed = self.character_data[key_Speed]
-
+        # skill state after
         if self.skill_processing is True:
-            self.set_state_image_and_clip_size(key_Skill)
-            self.skill_application_time = self.character_data[key_Skill_Application_Time]
+            pass
+        # skill state first enter
         elif self.character_data[key_Skill] is not None and self.cool_down is False:
+            self.frame = 0
             self.set_state_image_and_clip_size(key_Skill)
             self.skill_application_time = self.character_data[key_Skill_Application_Time]
+            skills.use_skill(self)
+        # skill state over
         else:
             self.add_event(END_SKILL)
+
 
     @staticmethod
     def exit(self, event):
@@ -141,22 +148,28 @@ class SKILL:
             self.cool_down = True
             self.buff = False
             self.skill_processing = False
+            skills.use_end_skill(self)
 
     @staticmethod
     def do(self):
+        world_cur_time = game_framework.cur_time
+        frame_time = game_framework.frame_time
         self.skill_processing = True
-        self.frame = (self.frame + self.frame_per_action * self.action_per_time * game_framework.frame_time) % self.frame_per_action
 
-        if self.skill_start_time + self.skill_application_time <= game_framework.cur_time:
+        self.frame = (self.frame + self.frame_per_action * self.action_per_time * frame_time) % self.frame_per_action
+
+        self.x += self.dirX * self.speed * frame_time
+        self.y += self.dirY * self.speed * frame_time
+
+        if self.skill_start_time + self.skill_application_time <= world_cur_time:
             self.add_event(END_SKILL)
 
-        skills.use_skill(self)
-
-        self.x += self.dirX * self.speed * game_framework.frame_time
-        self.y += self.dirY * self.speed * game_framework.frame_time
+        if self.skill_start_time + self.action_per_time <= world_cur_time:
+            self.set_state_image_and_clip_size(key_Run)
 
         self.x = clamp(50, self.x, server.background.width - 1 - 50)
         self.y = clamp(100, self.y, server.background.height - 1 - 100)
+
 
     @staticmethod
     def draw(self):
@@ -170,6 +183,7 @@ class SKILL:
             self.clip_size[clip_height],
             sx, sy, 50, 90)
 
+        self.char_id_font.draw(sx, sy+20, f'Player {self.char_id}', (255, 255, 0))
 
 next_state = {
     IDLE: {RAD: RUN, UAD: RUN, DAD: RUN, RAU: RUN, UAU: RUN, DAU: RUN, RD: SKILL, END_SKILL: IDLE},
@@ -178,10 +192,12 @@ next_state = {
 }
 
 class AI(Character):
-    def __init__(self, y):
-        super().__init__(y)
+    def __init__(self, char_id, y):
+        super().__init__(char_id, y)
+        self.char_id_font = load_font('res/NanumGothic.TTF', 15)
         self.cur_state = IDLE
         self.cur_state.enter(self, None)
+
 
     def update(self):
         self.cur_state.do(self)
@@ -194,6 +210,11 @@ class AI(Character):
 
     def draw(self):
         self.cur_state.draw(self)
+
+        sx = self.x - server.background.window_left
+        sy = self.y - server.background.window_bottom
+
+        self.char_id_font.draw(sx - 25, sy + 50, f'Player {self.char_id}', font_color[self.char_id - 1])
 
     def handle_events(self, event):
         if (event.type, event.key) in key_event_table:

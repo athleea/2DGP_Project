@@ -6,9 +6,11 @@ key_Idle, key_Run, key_Sturn, key_Skill, key_Speed, key_Cool_Time, key_Skill_App
 RAD, RAU, UAD, UAU, DAD, DAU, RD, END_SKILL = range(8)
 among, dog, ghost, hulk, human, icarus, kirby, ninja, patrick_star, pikachu, sonic, spiderman, turtle, witch, zombie = range(15)
 clip_left, clip_bottom, clip_width, clip_height = range(4)
+font_color = [(255,0,0), (0,0,255), (255,255,0), (0,255,0), (255,255,255)]
 
 class Character:
-    def __init__(self, y):
+    def __init__(self, char_id, y):
+        self.char_id = char_id
         self.image = None
         self.frame = 0
         self.clip_size = {clip_left: 0, clip_bottom: 0, clip_width: 0, clip_height: 0}
@@ -16,7 +18,7 @@ class Character:
         self.action_per_time = 0
 
         self.character_code = None
-        self.character_name = None
+        self.character_name = ""
         self.character_data = None
         self.x, self.y = 50, y
         self.dirX, self.dirY = 0, 0
@@ -31,7 +33,7 @@ class Character:
         self.skill_application_time = 0.0
 
         self.buff = False
-        self.debuff = False
+        self.debuff = []
 
         self.event_que = []
 
@@ -41,8 +43,12 @@ class Character:
     def add_event(self, event):
         self.event_que.insert(0, event)
 
-    def set_speed(self):
+    def set_speed(self, value):
+        self.speed = value
+
+    def set_default_speed(self):
         self.speed = self.character_data[key_Speed]
+
 
     def set_clip_size(self, left, bottom, width, height):
         self.clip_size[clip_left] = left
@@ -53,14 +59,15 @@ class Character:
     def set_character_data(self, character_code):
         self.character_code = character_code
         self.character_data = character_data.characters[character_code]
-        self.character_name = character_code
+        self.character_name = self.character_data['name']
 
     def set_random_character(self, state=key_Idle):
         random_name = random.choice(list(character_data.characters.keys()))
         # self.set_character_data(sonic)
         self.set_character_data(random_name)
         self.set_state_image_and_clip_size(state)
-        self.set_speed()
+        self.set_default_speed()
+        self.debuff.clear()
 
         self.cool_down = False
         self.skill_processing = False

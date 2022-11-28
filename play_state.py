@@ -52,8 +52,13 @@ def enter():
     pins = [Pin(i) for i in range(5)]
     race_timer = Timer()
 
-    server.player = Player()
-    server.ai = [AI(y=90*(i+2)) for i in range(4)]
+    random_id = random.sample(range(1,5+1),5)
+
+    char_id = random_id.pop()
+    server.player = Player(char_id, char_id*90+10)
+
+    for i in random_id:
+        server.ai.append(AI(i, i*90 + 10))
 
     stones = [Stone() for i in range(5)]
 
@@ -63,7 +68,7 @@ def enter():
 
     finish_line = FinishLine()
 
-    for i in range(4):
+    for i in range(len(server.ai)):
         pos_observer[i] = server.ai[i].get_pos()
     pos_observer[4] = server.player.get_pos()
 
@@ -139,6 +144,9 @@ def pause():
 
 
 def resume():
+    for a in server.ai:
+        print(a)
+        a.add_event(RAD)
     if game_restart is True:
         game_world.clear()
         game_framework.change_state(play_state)
