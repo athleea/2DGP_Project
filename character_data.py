@@ -1,3 +1,5 @@
+import skills
+
 key_Idle, key_Run, key_Sturn, key_Skill, key_Speed, key_Cool_Time, key_Skill_Application_Time, key_Skill_Text = range(8)
 
 PIXEL_PER_METER = (50.0 / 0.3)
@@ -135,7 +137,7 @@ characters = {
         key_Speed: get_speed_pps(NORMAL),
         key_Cool_Time: 10,
         key_Skill_Application_Time: 1,
-        key_Skill_Text: "",
+        key_Skill_Text: "플레이어가 앞으로 순간 이동합니다",
     }, witch: {
         "name": "witch",
         key_Idle: {"ActionPerTime": 1, "FramePerAction": 5, "bottom": 305, "width": 100, "height": 95},

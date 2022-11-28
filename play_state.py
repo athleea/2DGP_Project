@@ -2,6 +2,8 @@ import ready_state
 import end_state
 import lobby_state
 import play_state
+import game_world
+import server
 
 from player import *
 from stone import Stone
@@ -36,8 +38,8 @@ pos_observer = None
 
 
 def enter():
-    global bg, start_line, transform_line, finish_line, mini_map, pins, race_timer
-    global player, ai, stones, pos_observer
+    global start_line, transform_line, finish_line, mini_map, pins, race_timer
+    global stones, pos_observer
     global game_start, game_over, game_restart, lobby_start
 
     game_start = False
@@ -50,41 +52,40 @@ def enter():
     pins = [Pin(i) for i in range(5)]
     race_timer = Timer()
 
-    player = Player()
-    ai = [AI(y=480), AI(y=400), AI(y=300), AI(y=200)]
+    server.player = Player()
+    server.ai = [AI(y=90*(i+2)) for i in range(4)]
 
     stones = [Stone() for i in range(5)]
 
-    bg = Background()
+    server.background = Background()
     start_line = StartLine()
-    # transform_line = [TransformLine(x=1500*i) for i in range(1,5+1)]
-    transform_line = TransformLine()
+    transform_line = [TransformLine(x=1500*i) for i in range(1,5+1)]
+
     finish_line = FinishLine()
 
     for i in range(4):
-        pos_observer[i] = ai[i].get_pos()
-    pos_observer[4] = player.get_pos()
+        pos_observer[i] = server.ai[i].get_pos()
+    pos_observer[4] = server.player.get_pos()
 
     game_world.add_objects(stones, 2)
-    game_world.add_objects(ai, 2)
-    game_world.add_object(player, 2)
+    game_world.add_objects(server.ai, 2)
+    game_world.add_object(server.player, 2)
 
     game_world.add_object(race_timer, 1)
     game_world.add_object(mini_map, 1)
     game_world.add_objects(pins, 1)
     game_world.add_object(start_line, 1)
     game_world.add_object(finish_line, 1)
-    # game_world.add_objects(transform_line, 1)
-    game_world.add_object(transform_line, 1)
+    game_world.add_objects(transform_line, 1)
 
-    game_world.add_object(bg, 0)
+    game_world.add_object(server.background, 0)
 
-    game_world.add_collision_pairs(player, stones, 'character:stone')
-    game_world.add_collision_pairs(ai, stones, 'character:stone')
-    game_world.add_collision_pairs(player, transform_line, 'character:transform_line')
-    game_world.add_collision_pairs(ai, transform_line, 'character:transform_line')
-    game_world.add_collision_pairs(player, finish_line, 'character:finish_line')
-    game_world.add_collision_pairs(ai, finish_line, 'character:finish_line')
+    game_world.add_collision_pairs(server.player, stones, 'character:stone')
+    game_world.add_collision_pairs(server.ai, stones, 'character:stone')
+    game_world.add_collision_pairs(server.player, transform_line, 'character:transform_line')
+    game_world.add_collision_pairs(server.ai, transform_line, 'character:transform_line')
+    game_world.add_collision_pairs(server.player, finish_line, 'character:finish_line')
+    game_world.add_collision_pairs(server.ai, finish_line, 'character:finish_line')
 
 
 def exit():
@@ -110,8 +111,8 @@ def update():
                 b.handle_collision(a, group)
 
         for i in range(4):
-            pos_observer[i] = ai[i].get_pos()
-        pos_observer[4] = player.get_pos()
+            pos_observer[i] = server.ai[i].get_pos()
+        pos_observer[4] = server.player.get_pos()
 
 
 def draw():
@@ -130,7 +131,7 @@ def handle_events():
         elif (event.type, event.key) == (SDL_KEYDOWN, SDLK_ESCAPE):
             game_framework.change_state(lobby_state)
         else:
-            player.handle_events(event)
+            server.player.handle_events(event)
 
 
 def pause():

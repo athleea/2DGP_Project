@@ -1,7 +1,6 @@
 from pico2d import *
 
-import game_framework
-import end_state
+import server
 import play_state
 
 
@@ -9,15 +8,16 @@ class FinishLine:
 
     def __init__(self):
         self.image = load_image('res/finish_line.png')
-        self.x = 700
-        self.y = 267
+        self.x, self.y = server.background.width - 25, 270
 
     def update(self):
         pass
 
     def draw(self):
-        self.image.draw(self.x, 267)
-        draw_rectangle(*self.get_bb())
+        sx = self.x - server.background.window_left
+        sy = self.y - server.background.window_bottom
+
+        self.image.draw(sx, sy)
 
     def get_bb(self):
         return self.x - 25, self.y - 212, self.x + 25, self.y + 212
