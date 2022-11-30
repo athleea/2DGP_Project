@@ -33,6 +33,7 @@ def use_end_skill(character):
 
 def skill_teleport(character, x):
     character.x += x
+    print("teleport")
 
 
 def skill_speed_up(character, value):
@@ -68,4 +69,5 @@ def skill_end_set_speed_all(character):
             obj.set_default_speed()
 
 def skill_end_speed_up(character):
+    character.buff = False
     character.set_default_speed()

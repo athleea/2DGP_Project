@@ -3,9 +3,10 @@ import character_data
 from pico2d import *
 
 key_Idle, key_Run, key_Sturn, key_Skill, key_Speed, key_Cool_Time, key_Skill_Application_Time, key_Skill_Text,  = range(8)
-RAD, RAU, UAD, UAU, DAD, DAU, RD, END_SKILL = range(8)
+RAD, RAU, UAD, UAU, DAD, DAU, RD, END_SKILL, START_STURN, END_STURN = range(10)
 among, dog, ghost, hulk, human, icarus, kirby, ninja, patrick_star, pikachu, sonic, spiderman, turtle, witch, zombie = range(15)
 clip_left, clip_bottom, clip_width, clip_height = range(4)
+
 font_color = [(255,0,0), (0,0,255), (255,255,0), (0,255,0), (255,255,255)]
 
 class Character:
@@ -31,6 +32,9 @@ class Character:
         self.skill_start_time = 0
         self.skill_end_time = 0
         self.skill_application_time = 0.0
+
+        self.sturn_processing = False
+        self.sturn_start_time = 0
 
         self.buff = False
         self.debuff = []
@@ -88,8 +92,8 @@ class Character:
                 height=self.character_data[state]['height'],
             )
 
-    def get_pos(self):
-        return self.x, self.y
+    def get_x(self):
+        return self.x
 
     def get_bb(self):
         return self.x - 25, self.y - 45, self.x + 25, self.y + 45

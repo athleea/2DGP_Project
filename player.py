@@ -4,8 +4,6 @@ import game_framework
 
 from character import *
 
-
-
 key_event_table = {
     (SDL_KEYDOWN, SDLK_RIGHT): RAD,
     (SDL_KEYDOWN, SDLK_UP): UAD,
@@ -19,6 +17,7 @@ key_event_table = {
 class IDLE:
     @staticmethod
     def enter(self, event):
+        self.dirX, self.dirY = 0,0
         self.set_state_image_and_clip_size(key_Idle)
 
     @staticmethod
@@ -28,6 +27,8 @@ class IDLE:
                 time = game_framework.cur_time
                 self.skill_start_time = time
                 self.skill_cool_time = self.character_data[key_Cool_Time] + time
+        elif event == START_STURN:
+            self.sturn_start_time = game_framework.cur_time
 
     @staticmethod
     def do(self):
@@ -75,11 +76,9 @@ class RUN:
 
     @staticmethod
     def exit(self, event):
-        if event == RD:
-            if self.cool_down is False:
-                time = game_framework.cur_time
-                self.skill_start_time = time
-                self.skill_cool_time = self.character_data[key_Cool_Time] + time
+        if event == START_STURN:
+            self.sturn_processing = False
+            self.sturn_start_time = game_framework.cur_time
 
     @staticmethod
     def do(self):
@@ -129,16 +128,23 @@ class SKILL:
         elif event == DAU:
             self.dirY += 1
 
-        # skill state after
-        if self.skill_processing is True:
-            pass
-        # skill state first enter
-        elif self.character_data[key_Skill] is not None and self.cool_down is False:
-            self.frame = 0
-            self.set_state_image_and_clip_size(key_Skill)
-            self.skill_application_time = self.character_data[key_Skill_Application_Time]
-            skills.use_skill(self)
-        # skill state over
+        if self.character_data[key_Skill] is not None:
+            if self.skill_processing is False and self.cool_down is False:
+                start_time = game_framework.cur_time
+                self.frame = 0
+
+                self.cool_down = True
+                self.skill_cool_time = start_time + self.character_data[key_Cool_Time]
+
+
+                self.skill_processing = True
+                self.skill_start_time = start_time
+
+                self.skill_application_time = self.character_data[key_Skill_Application_Time]
+                self.set_state_image_and_clip_size(key_Skill)
+                skills.use_skill(self)
+
+
         else:
             self.add_event(END_SKILL)
 
@@ -146,16 +152,21 @@ class SKILL:
     @staticmethod
     def exit(self, event):
         if event == END_SKILL:
-            self.cool_down = True
+            skills.use_end_skill(self)
             self.buff = False
             self.skill_processing = False
-            skills.use_end_skill(self)
+
+        elif event == START_STURN:
+            self.buff = False
+            self.skill_processing = False
+            self.sturn_processing = False
+            self.sturn_start_time = game_framework.cur_time
+
 
     @staticmethod
     def do(self):
         world_cur_time = game_framework.cur_time
         frame_time = game_framework.frame_time
-        self.skill_processing = True
 
         self.frame = (self.frame + self.frame_per_action * self.action_per_time * frame_time) % self.frame_per_action
 
@@ -164,9 +175,6 @@ class SKILL:
 
         if self.skill_start_time + self.skill_application_time <= world_cur_time:
             self.add_event(END_SKILL)
-
-        if self.skill_start_time + self.action_per_time <= world_cur_time:
-            self.set_state_image_and_clip_size(key_Run)
 
         self.x = clamp(50, self.x, server.background.width - 1 - 50)
         self.y = clamp(100, self.y, server.background.height - 1 - 100)
@@ -184,11 +192,57 @@ class SKILL:
             self.clip_size[clip_height],
             sx, sy, 50, 90)
 
+class STURN:
+    @staticmethod
+    def enter(self, event):
+        self.set_state_image_and_clip_size(key_Sturn)
+        if self.character_data[key_Sturn] is not None:
+            if self.sturn_processing is False:
+                self.frame = 0
+                self.speed = 0
+                self.sturn_processing = True
+        else:
+            self.add_event(END_STURN)
+
+    @staticmethod
+    def exit(self, event):
+        if event == END_STURN:
+            self.set_default_speed()
+
+
+
+    @staticmethod
+    def do(self):
+        world_cur_time = game_framework.cur_time
+        frame_time = game_framework.frame_time
+
+        self.frame = (self.frame + self.frame_per_action * self.action_per_time * frame_time)
+        if self.frame >= self.frame_per_action:
+            self.frame = self.frame_per_action - 0.1
+
+        #print(self.sturn_start_time, world_cur_time)
+
+        if self.sturn_processing is True and self.sturn_start_time + 2.0 <= world_cur_time:
+            self.add_event(END_STURN)
+
+
+    @staticmethod
+    def draw(self):
+        sx = self.x - server.background.window_left
+        sy = self.y - server.background.window_bottom
+
+        self.image.clip_draw(
+            int(self.frame) * self.clip_size[clip_left],
+            self.clip_size[clip_bottom],
+            self.clip_size[clip_width],
+            self.clip_size[clip_height],
+            sx, sy, 50, 90)
 
 next_state = {
-    IDLE: {RAD: RUN, UAD: RUN, DAD: RUN, RAU: RUN, UAU: RUN, DAU: RUN, RD: SKILL, END_SKILL: IDLE},
-    RUN: {RAD: RUN, UAD: RUN, DAD: RUN, RAU: RUN, UAU: RUN, DAU: RUN, RD: SKILL, END_SKILL: RUN},
-    SKILL: {RAD: SKILL, UAD: SKILL, DAD: SKILL, RAU: SKILL, UAU: SKILL, DAU: SKILL, RD: SKILL, END_SKILL: RUN},
+    IDLE: {RAD: RUN, UAD: RUN, DAD: RUN, RAU: RUN, UAU: RUN, DAU: RUN, RD: SKILL, END_SKILL: IDLE, START_STURN: STURN, END_STURN:IDLE},
+    RUN: {RAD: RUN, UAD: RUN, DAD: RUN, RAU: RUN, UAU: RUN, DAU: RUN, RD: SKILL, END_SKILL: RUN, START_STURN: STURN ,END_STURN:RUN},
+    SKILL: {RAD: SKILL, UAD: SKILL, DAD: SKILL, RAU: SKILL, UAU: SKILL, DAU: SKILL, RD: SKILL, END_SKILL: RUN, START_STURN: STURN},
+    STURN: {RAD: STURN, UAD: STURN, DAD: STURN, RAU: STURN, UAU: STURN, DAU: STURN, RD: STURN, END_STURN: IDLE, START_STURN: STURN},
 }
 
 class Player(Character):
@@ -198,7 +252,7 @@ class Player(Character):
         self.skill_text_font = load_font('res/NanumGothic.TTF', 20)
         self.cool_time_font = load_font('res/NanumGothic.TTF', 20)
         self.cur_state = IDLE
-        self.set_character_data(witch)  #test code
+        self.set_character_data(sonic)  #test code
         self.cur_state.enter(self, None)
 
 
@@ -234,4 +288,4 @@ class Player(Character):
 
     def handle_collision(self, other, group):
         if group == 'character:stone':
-            pass
+            self.add_event(START_STURN)

@@ -47,7 +47,7 @@ def enter():
     game_restart = False
     lobby_start = False
 
-    pos_observer = [[], [], [], [], []]
+    pos_observer = [0,0,0,0,0]
     mini_map = MiniMap()
     pins = [Pin(i) for i in range(5)]
     race_timer = Timer()
@@ -57,8 +57,7 @@ def enter():
     char_id = random_id.pop()
     server.player = Player(char_id, char_id*90+10)
 
-    for i in random_id:
-        server.ai.append(AI(i, i*90 + 10))
+    server.ai = [AI(i, i*90 + 10) for i in random_id]
 
     stones = [Stone() for i in range(5)]
 
@@ -68,9 +67,9 @@ def enter():
 
     finish_line = FinishLine()
 
-    for i in range(len(server.ai)):
-        pos_observer[i] = server.ai[i].get_pos()
-    pos_observer[4] = server.player.get_pos()
+    for i, obj in enumerate(server.ai):
+        pos_observer[i] = obj.get_x()
+    pos_observer[4] = server.player.get_x()
 
     game_world.add_objects(stones, 2)
     game_world.add_objects(server.ai, 2)
@@ -94,8 +93,8 @@ def enter():
 
 
 def exit():
-    global game_start, game_over, game_restart, lobby_start
-    del game_start, game_over, game_restart, lobby_start
+    global game_start, game_over, game_restart, lobby_start, pos_observer
+    del game_start, game_over, game_restart, lobby_start, pos_observer
     game_world.clear()
     game_world.collision_group.clear()
 
@@ -115,9 +114,9 @@ def update():
                 a.handle_collision(b, group)
                 b.handle_collision(a, group)
 
-        for i in range(4):
-            pos_observer[i] = server.ai[i].get_pos()
-        pos_observer[4] = server.player.get_pos()
+        for i, obj in enumerate(server.ai):
+            pos_observer[i] = obj.get_x()
+        pos_observer[4] = server.player.get_x()
 
 
 def draw():
@@ -145,7 +144,6 @@ def pause():
 
 def resume():
     for a in server.ai:
-        print(a)
         a.add_event(RAD)
     if game_restart is True:
         game_world.clear()

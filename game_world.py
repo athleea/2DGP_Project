@@ -13,19 +13,19 @@ def remove_object(o):
             layer.remove(o)
             del o
             return
-    #raise ValueError('Trying destroy non existing object')
+    raise ValueError('Trying destroy non existing object')
 
 
 def remove_object(o):
     for layer in objects:
         try:
-            layer.remove(o)
             remove_collision_object(o)
+            layer.remove(o)
             del o
             return
         except:
             pass
-    #raise ValueError('Trying destroy non existing object')
+    raise ValueError('Trying destroy non existing object', o)
 
 
 def all_objects():
@@ -40,22 +40,23 @@ def clear():
     for layer in objects:
         layer.clear()
 
+
 def add_collision_pairs(a, b, group):
 
     if group not in collision_group:
         collision_group[group] = [ [], [] ] # list of list : list pair
 
     if a:
-        if type(b) is list:
-            collision_group[group][1] += b
+        if type(a) is list:
+            collision_group[group][1] += a
         else:
-            collision_group[group][1].append(b)
+            collision_group[group][1].append(a)
 
     if b:
-        if type(a) is list:
-            collision_group[group][0] += a
+        if type(b) is list:
+            collision_group[group][0] += b
         else:
-            collision_group[group][0].append(a)
+            collision_group[group][0].append(b)
 
 def all_collision_pairs():
     for group, pairs in collision_group.items():
@@ -70,5 +71,10 @@ def remove_collision_object(o):
             pairs[0].remove(o)
         if o in pairs[1]:
             pairs[1].remove(o)
+
+
+def update():
+    for game_object in all_objects():
+        game_object.update()
 
 
