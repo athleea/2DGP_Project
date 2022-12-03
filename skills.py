@@ -1,8 +1,9 @@
-import game_framework
 import game_world
-import play_state
 import player
 import ai
+import fireball
+import knife
+import server
 from character_data import *
 
 debuff = 1
@@ -12,9 +13,11 @@ def use_skill(character):
         case "among":
             skill_speed_up(character, get_speed_pps(5))
         case "human":
-            skill_throw_obstacle(character)
-        case "iacrus":
-            skill_throw_obstacle(character)
+            k = knife.Knife(character.x+40, character.y)
+            skill_throws(k)
+        case "icarus":
+            fire_ball = fireball.FireBall(character.x+40, character.y)
+            skill_throws(fire_ball)
         case "ninja":
             skill_teleport(character, 400)
         case "sonic":
@@ -31,21 +34,17 @@ def use_end_skill(character):
         case "witch":
             skill_end_set_speed_all(character)
 
-def skill_teleport(character, x):
-    character.x += x
-    print("teleport")
-
+def skill_teleport(character, distance):
+    character.x += distance
 
 def skill_speed_up(character, value):
     character.buff = True
     character.set_speed(value)
 
-def skill_build_obstacle(character, obstacle):
-    game_world.add_object(obstacle, 1)
-
-
-def skill_throw_obstacle(character):
-    pass
+def skill_throws(obj):
+    game_world.add_object(obj, 2)
+    game_world.add_collision_pairs(server.player, obj, "character:throws")
+    game_world.add_collision_pairs(server.ai, obj, "character:throws")
 
 def skill_remove_debuff(character):
     character.debuff.clear()

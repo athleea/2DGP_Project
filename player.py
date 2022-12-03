@@ -252,7 +252,7 @@ class Player(Character):
         self.skill_text_font = load_font('res/NanumGothic.TTF', 20)
         self.cool_time_font = load_font('res/NanumGothic.TTF', 20)
         self.cur_state = IDLE
-        self.set_character_data(sonic)  #test code
+        self.set_character_data(human)  #test code
         self.cur_state.enter(self, None)
 
 

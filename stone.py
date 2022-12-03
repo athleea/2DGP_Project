@@ -41,8 +41,9 @@ class Stone:
             game_world.remove_object(self)
 
     def handle_collision(self, other, group):
-        other.add_event(START_STURN)
-        game_world.remove_object(self)
+        if group == "character:stone":
+            other.add_event(START_STURN)
+            game_world.remove_object(self)
 
     def get_bb(self):
         return self.x - 16, self.y - 23, self.x + 16, self.y + 23

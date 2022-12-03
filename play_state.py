@@ -22,8 +22,6 @@ game_restart = None
 lobby_start = None
 difficulty = 0
 
-player = None
-ai = []
 stones = []
 
 bg = None
@@ -74,6 +72,7 @@ def enter():
     game_world.add_objects(stones, 2)
     game_world.add_objects(server.ai, 2)
     game_world.add_object(server.player, 2)
+    #game_world.add_object(server.throw_object, 2)
 
     game_world.add_object(race_timer, 1)
     game_world.add_object(mini_map, 1)
@@ -91,6 +90,8 @@ def enter():
     game_world.add_collision_pairs(server.player, finish_line, 'character:finish_line')
     game_world.add_collision_pairs(server.ai, finish_line, 'character:finish_line')
 
+    #game_world.add_collision_pairs(server.player, server.throw_object, 'character:throw_object')
+    #game_world.add_collision_pairs(server.ai, server.throw_object, 'character:throw_object')
 
 def exit():
     global game_start, game_over, game_restart, lobby_start, pos_observer
