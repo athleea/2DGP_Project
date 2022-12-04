@@ -1,6 +1,5 @@
-import skills
+PIXEL_PER_METER = (50.0 / 0.3) # 50 pixel 30 cm
 
-PIXEL_PER_METER = (50.0 / 0.3)
 def get_speed_pps(RUN_SPEED_KMPH):
     RUN_SPEED_MPM = (RUN_SPEED_KMPH * 1000.0 / 60)
     RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0)
@@ -8,7 +7,7 @@ def get_speed_pps(RUN_SPEED_KMPH):
 
     return RUN_SPEED_PPS
 
-key_Idle, key_Run, key_Sturn, key_Skill, key_Speed, key_Cool_Time, key_Skill_Application_Time, key_Skill_Text = range(8)
+key_Idle, key_Run, key_Sturn, key_Skill, key_Speed, key_Cool_Time, key_Skill_Application_Time, key_Skill_Text, key_Stat_Text = range(9)
 VERY_SLOW, SLOW, NORMAL, FAST, VERY_FAST = get_speed_pps(1), get_speed_pps(1.5), get_speed_pps(2.0), get_speed_pps(2.5), get_speed_pps(3)
 among, dog, ghost, hulk, human, icarus, kirby, ninja, patrick_star, pikachu, sonic, spiderman, turtle, witch, zombie = range(15)
 
@@ -37,20 +36,20 @@ characters = {
         "name": "hulk",
         key_Idle: {"ActionPerTime": 1.0 / 0.5, "FramePerAction": 3, "bottom": 200, "width": 60, "height": 90},
         key_Run: {"ActionPerTime": 1.0 / 0.5, "FramePerAction": 6, "bottom": 100, "width": 90, "height": 90},
-        key_Sturn: {"ActionPerTime": 2, "FramePerAction": 5, "bottom": 0, "width": 100, "height": 90},
+        key_Sturn: None,
         key_Skill: None,
         key_Speed: SLOW,
         key_Cool_Time: 0,
         key_Skill_Application_Time: 3,
-        key_Skill_Text: "3초간 해로운 효과를 받지 않습니다.",
+        key_Skill_Text: "방해물의 영향을 받지 않습니다.",
     }, kirby: {
         "name": "kirby",
         key_Idle: {"ActionPerTime": 1.0 / 0.5, "FramePerAction": 6, "bottom": 85, "width": 50, "height": 40},
         key_Run: {"ActionPerTime": 1.0 / 0.5, "FramePerAction": 4, "bottom": 45, "width": 50, "height": 40},
         key_Sturn: {"ActionPerTime": 2, "FramePerAction": 4, "bottom": 0, "width": 50, "height": 45},
-        key_Skill: None,
+        key_Skill: {"ActionPerTime": 1.0 / 0.5, "FramePerAction": 4, "bottom": 45, "width": 50, "height": 40},
         key_Speed: FAST,
-        key_Cool_Time: 0,
+        key_Cool_Time: 4,
         key_Skill_Application_Time: 0,
         key_Skill_Text: "해로운 효과를 제거 한다",
     }, turtle: {
@@ -59,10 +58,10 @@ characters = {
         key_Run: {"ActionPerTime": 1.0 / 0.5, "FramePerAction": 6, "bottom": 0, "width": 70, "height": 46},
         key_Sturn: None,
         key_Skill: None,
-        key_Speed: VERY_SLOW,
+        key_Speed: VERY_FAST,
         key_Cool_Time: 0,
         key_Skill_Application_Time: 0,
-        key_Skill_Text: "",
+        key_Skill_Text: "방해물의 영향을 받지 않습니다.",
     }, ghost: {
         "name": "ghost",
         key_Idle: {"ActionPerTime": 1.0 / 0.5, "FramePerAction": 8, "bottom": 65, "width": 75, "height": 63},
@@ -72,7 +71,7 @@ characters = {
         key_Speed: FAST,
         key_Cool_Time: 0,
         key_Skill_Application_Time: 0,
-        key_Skill_Text: "",
+        key_Skill_Text: "방해물의 영향을 받지 않습니다.",
     }, pikachu: {
         "name": "pikachu",
         key_Idle: {"ActionPerTime": 1.0 / 0.5, "FramePerAction": 4, "bottom": 85, "width": 60, "height": 45},
@@ -140,7 +139,7 @@ characters = {
         key_Sturn: {"ActionPerTime": 2, "FramePerAction": 5, "bottom": 120, "width": 110, "height": 85},
         key_Skill: {"ActionPerTime": 0.8, "FramePerAction": 4, "bottom": 0, "width": 100, "height": 120},
         key_Speed: FAST,
-        key_Cool_Time: 10.0,
+        key_Cool_Time: 13.0,
         key_Skill_Application_Time: 5,
         key_Skill_Text: "모든 플레이어의 이동 속도를 감소 시킨다.",
     }, zombie: {
@@ -149,18 +148,18 @@ characters = {
         key_Run: {"ActionPerTime": 1.0 / 0.5, "FramePerAction": 5, "bottom": 70, "width": 90, "height": 75},
         key_Sturn: {"ActionPerTime": 2, "FramePerAction": 8, "bottom": 0, "width": 90, "height": 70},
         key_Skill: None,
-        key_Speed: VERY_SLOW,
+        key_Speed: SLOW,
         key_Cool_Time: 0,
         key_Skill_Application_Time: 0,
-        key_Skill_Text: "상대에게 붙으면 상대의 이동 속도를 감소 시킨다.",
+        key_Stat_Text: "",
     }, spiderman: {
         "name": "spiderman",
         key_Idle: {"ActionPerTime": 1.0 / 0.5, "FramePerAction": 3, "bottom": 110, "width": 70, "height": 70},
         key_Run: {"ActionPerTime": 1.0 / 0.5, "FramePerAction": 8, "bottom": 50, "width": 70, "height": 60},
         key_Sturn: {"ActionPerTime": 2, "FramePerAction": 3, "bottom": 0, "width": 50, "height": 50},
-        key_Skill: None,
+        key_Skill: {"ActionPerTime": 1.0 / 0.5, "FramePerAction": 8, "bottom": 50, "width": 70, "height": 60},
         key_Speed: FAST,
-        key_Cool_Time: 0,
+        key_Cool_Time: 5,
         key_Skill_Application_Time: 0,
         key_Skill_Text: "",
     }, 

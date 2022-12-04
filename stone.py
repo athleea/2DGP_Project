@@ -24,6 +24,7 @@ class Stone:
         self.x, self.y = random.randint(1000, 9900), 90 * random.randint(1, 5)
         self.speed = character_data.get_speed_pps(random.randint(2, 5))
         self.frame = 0
+        self.owner_id = 0
 
     def draw(self):
         sx = self.x - server.background.window_left

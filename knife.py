@@ -8,13 +8,14 @@ from character import START_STURN
 class Knife:
     image = None
 
-    def __init__(self, x, y):
+    def __init__(self, x, y, id):
         if Knife.image is None:
             Knife.image = load_image('res/knife.png')
         self.start_x = x
         self.x, self.y = x, y
         self.speed = character_data.get_speed_pps(5)
         self.frame = 0
+        self.owner_id = id
 
     def draw(self):
         sx = self.x - server.background.window_left

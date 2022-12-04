@@ -1,10 +1,8 @@
 import random
-import character_data
+from character_data import *
 from pico2d import *
 
-key_Idle, key_Run, key_Sturn, key_Skill, key_Speed, key_Cool_Time, key_Skill_Application_Time, key_Skill_Text,  = range(8)
 RAD, RAU, UAD, UAU, DAD, DAU, RD, END_SKILL, START_STURN, END_STURN = range(10)
-among, dog, ghost, hulk, human, icarus, kirby, ninja, patrick_star, pikachu, sonic, spiderman, turtle, witch, zombie = range(15)
 clip_left, clip_bottom, clip_width, clip_height = range(4)
 
 font_color = [(255,0,0), (0,0,255), (255,255,0), (0,255,0), (255,255,255)]
@@ -62,11 +60,11 @@ class Character:
 
     def set_character_data(self, character_code):
         self.character_code = character_code
-        self.character_data = character_data.characters[character_code]
+        self.character_data = characters[character_code]
         self.character_name = self.character_data['name']
 
     def set_random_character(self, state=key_Idle):
-        random_name = random.choice(list(character_data.characters.keys()))
+        random_name = random.choice(list(characters.keys()))
         # self.set_character_data(sonic)
         self.set_character_data(random_name)
         self.set_state_image_and_clip_size(state)

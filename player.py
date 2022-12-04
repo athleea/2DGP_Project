@@ -17,7 +17,6 @@ key_event_table = {
 class IDLE:
     @staticmethod
     def enter(self, event):
-        self.dirX, self.dirY = 0,0
         self.set_state_image_and_clip_size(key_Idle)
 
     @staticmethod
@@ -65,12 +64,12 @@ class RUN:
         elif event == UAD:
             self.dirY += 1
         elif event == DAD:
-            self.dirY += -1
+            self.dirY -= 1
 
         elif event == RAU:
             self.dirX = 0
         elif event == UAU:
-            self.dirY += -1
+            self.dirY -= 1
         elif event == DAU:
             self.dirY += 1
 
@@ -143,8 +142,6 @@ class SKILL:
                 self.skill_application_time = self.character_data[key_Skill_Application_Time]
                 self.set_state_image_and_clip_size(key_Skill)
                 skills.use_skill(self)
-
-
         else:
             self.add_event(END_SKILL)
 
@@ -195,7 +192,21 @@ class SKILL:
 class STURN:
     @staticmethod
     def enter(self, event):
-        self.set_state_image_and_clip_size(key_Sturn)
+
+        if event == RAD:
+            self.dirX += 1
+        elif event == UAD:
+            self.dirY += 1
+        elif event == DAD:
+            self.dirY += -1
+
+        elif event == RAU:
+            self.dirX += -1
+        elif event == UAU:
+            self.dirY += -1
+        elif event == DAU:
+            self.dirY += 1
+
         if self.character_data[key_Sturn] is not None:
             if self.sturn_processing is False:
                 self.frame = 0
@@ -204,12 +215,12 @@ class STURN:
         else:
             self.add_event(END_STURN)
 
+        self.set_state_image_and_clip_size(key_Sturn)
+
     @staticmethod
     def exit(self, event):
         if event == END_STURN:
             self.set_default_speed()
-
-
 
     @staticmethod
     def do(self):
@@ -252,7 +263,7 @@ class Player(Character):
         self.skill_text_font = load_font('res/NanumGothic.TTF', 20)
         self.cool_time_font = load_font('res/NanumGothic.TTF', 20)
         self.cur_state = IDLE
-        self.set_character_data(human)  #test code
+        self.set_character_data(kirby)  #test code
         self.cur_state.enter(self, None)
 
 
@@ -271,7 +282,7 @@ class Player(Character):
         sx = self.x - server.background.window_left
         sy = self.y - server.background.window_bottom
 
-        self.char_id_font.draw(sx - 25, sy + 50, f'Player', font_color[self.char_id-1])
+        self.char_id_font.draw(sx - 25, sy + 50, f'Player', (255,0,0)) #font_color[self.char_id-1])
 
         if self.character_data[key_Skill_Text] != "":
             self.skill_text_font.draw(10, 30, f'스킬 : {self.character_data[key_Skill_Text]}', (255, 255, 0))
@@ -280,6 +291,8 @@ class Player(Character):
                 self.cool_time_font.draw(620, 30, '쿨타임 : 사용 가능', (255, 255, 0))
             else:
                 self.cool_time_font.draw(620, 30, f'쿨타임 : {-cool_time_text:.1f}', (255, 255, 0))
+        elif self.character_data[key_Stat_Text] != "":
+            self.skill_text_font.draw(10, 30, f'특성 : {self.character_data[key_Stat_Text]}', (255, 255, 0))
 
     def handle_events(self, event):
         if (event.type, event.key) in key_event_table:

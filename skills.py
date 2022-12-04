@@ -13,10 +13,10 @@ def use_skill(character):
         case "among":
             skill_speed_up(character, get_speed_pps(5))
         case "human":
-            k = knife.Knife(character.x+40, character.y)
+            k = knife.Knife(character.x+40, character.y, character.char_id)
             skill_throws(k)
         case "icarus":
-            fire_ball = fireball.FireBall(character.x+40, character.y)
+            fire_ball = fireball.FireBall(character.x+40, character.y, character.char_id)
             skill_throws(fire_ball)
         case "ninja":
             skill_teleport(character, 400)
@@ -54,7 +54,7 @@ def skill_set_speed_all(character, value):
     for obj in game_world.all_objects():
         if obj == character:
             continue
-        if type(obj) == ai.AI or type(obj) == player.Player:
+        elif type(obj) == ai.AI or type(obj) == player.Player:
             obj.debuff.append(debuff)
             obj.set_speed(value)
 
@@ -62,7 +62,7 @@ def skill_end_set_speed_all(character):
     for obj in game_world.all_objects():
         if obj == character:
             continue
-        if type(obj) == ai.AI or type(obj) == player.Player:
+        elif type(obj) == ai.AI or type(obj) == player.Player:
             if obj.debuff:
                 obj.debuff.pop()
             obj.set_default_speed()
