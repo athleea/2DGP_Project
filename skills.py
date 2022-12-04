@@ -4,7 +4,8 @@ import ai
 import fireball
 import knife
 import server
-from character_data import *
+
+from character import *
 
 debuff = 1
 
@@ -24,6 +25,8 @@ def use_skill(character):
             skill_speed_up(character, get_speed_pps(5))
         case "witch":
             skill_set_speed_all(character, VERY_SLOW)
+        case "kirby":
+            skill_remove_debuff(character)
 
 def use_end_skill(character):
     match character.character_name:

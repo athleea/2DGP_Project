@@ -51,7 +51,7 @@ characters = {
         key_Speed: FAST,
         key_Cool_Time: 4,
         key_Skill_Application_Time: 0,
-        key_Skill_Text: "해로운 효과를 제거 한다",
+        key_Skill_Text: "이동속도 저하 효과를 제거 한다",
     }, turtle: {
         "name": "turtle",
         key_Idle: {"ActionPerTime": 1.0 / 0.5, "FramePerAction": 5, "bottom": 56, "width": 70, "height": 47},
