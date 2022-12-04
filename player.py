@@ -142,6 +142,8 @@ class SKILL:
                 self.skill_application_time = self.character_data[key_Skill_Application_Time]
                 self.set_state_image_and_clip_size(key_Skill)
                 skills.use_skill(self)
+
+                self.skill_sound.play()
         else:
             self.add_event(END_SKILL)
 
@@ -262,11 +264,10 @@ class Player(Character):
         self.char_id_font = load_font('res/NanumGothic.TTF', 15)
         self.skill_text_font = load_font('res/NanumGothic.TTF', 20)
         self.cool_time_font = load_font('res/NanumGothic.TTF', 20)
+        self.skill_sound = load_wav('res/skill.wav')
+        self.hit_sound = load_wav('res/hit.wav')
         self.cur_state = IDLE
-        self.set_character_data(kirby)  #test code
         self.cur_state.enter(self, None)
-
-
     def update(self):
         self.cur_state.do(self)
 
@@ -301,4 +302,5 @@ class Player(Character):
 
     def handle_collision(self, other, group):
         if group == 'character:stone':
+            self.hit_sound.play()
             self.add_event(START_STURN)

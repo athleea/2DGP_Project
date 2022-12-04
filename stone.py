@@ -4,6 +4,7 @@ import game_world
 import character_data
 import game_framework
 import server
+import skills
 from character import START_STURN
 
 stone = {
@@ -17,12 +18,14 @@ stone = {
 
 class Stone:
     image = None
+    hit_sound = None
 
     def __init__(self):
         if Stone.image is None:
             Stone.image = load_image('res/rock.png')
-        self.x, self.y = random.randint(1000, 9900), 90 * random.randint(1, 5)
-        self.speed = character_data.get_speed_pps(random.randint(2, 5))
+
+        self.x, self.y = random.randint(4000, 9900), 90 * random.randint(1, 5)
+        self.speed = character_data.get_speed_pps(random.randint(3, 5))
         self.frame = 0
         self.owner_id = 0
 

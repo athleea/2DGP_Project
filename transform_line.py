@@ -1,4 +1,6 @@
 from pico2d import *
+
+import skills
 from character_data import key_Run
 
 import server
@@ -28,6 +30,7 @@ class TransformLine:
         if group == 'character:transform_line':
             if not self.check_in_t_list(other):
                 self.t_list.append(other)
+                skills.use_end_skill(other)
                 other.set_random_character(key_Run)
 
     def check_in_t_list(self, player):

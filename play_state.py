@@ -33,7 +33,7 @@ mini_map = None
 pins = []
 
 pos_observer = None
-
+winner = None
 
 def enter():
     global start_line, transform_line, finish_line, mini_map, pins, race_timer
@@ -57,7 +57,7 @@ def enter():
 
     server.ai = [AI(i, i*90 + 10) for i in random_id]
 
-    stones = [Stone() for i in range(5)]
+    stones = [Stone() for i in range(30)]
 
     server.background = Background()
     start_line = StartLine()
@@ -118,6 +118,7 @@ def update():
         for i, obj in enumerate(server.ai):
             pos_observer[i] = obj.get_x()
         pos_observer[4] = server.player.get_x()
+
 
 
 def draw():

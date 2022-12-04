@@ -238,11 +238,12 @@ class AI(Character):
         self.add_event(RD)
 
     def move_to_finish_line(self):
-        self.tx = 10000
         self.dir = 0
         return BehaviorTree.SUCCESS
 
     def fine_obstruction(self):
+        if self.character_data[key_Sturn] is None:
+            return BehaviorTree.FAIL
         shortest_distance = 10000 ** 2
         target_obstruction = None
         for obj in game_world.all_objects():

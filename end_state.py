@@ -2,19 +2,20 @@ from pico2d import *
 
 import game_framework
 import play_state
-import lobby_state
-import game_world
+from player import Player
 
 image = None
+winner_font = None
 
 def enter():
-    global image
+    global image, winner_font
     image = load_image('res/finish.png')
+    winner_font = load_font('res/NanumGothic.TTF', 100)
 
 
 def exit():
-    global image
-    del image
+    global image, winner_font
+    del image, winner_font
 
 def handle_events():
     events = get_events()
@@ -34,6 +35,10 @@ def draw():
     clear_canvas()
     play_state.draw_world()
     image.draw(400, 300)
+    if type(play_state.winner) is Player:
+        winner_font.draw(300, 300, f'Win!', (255, 255, 0))
+    else:
+        winner_font.draw(300, 300, f'Lose..', (255, 255, 0))
     update_canvas()
 
 

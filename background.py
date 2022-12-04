@@ -13,6 +13,7 @@ class Background:
         self.window_bottom = 0
 
 
+
     def update(self):
         self.window_left = clamp(0, int(server.player.x) - self.canvas_width // 2, self.width - self.canvas_width - 1)
         self.window_bottom = clamp(0, int(server.player.y) - self.canvas_height // 2, self.height - self.canvas_height - 1)
